@@ -1,6 +1,7 @@
 #!/bin/bash
 # Project: Get5 Web API Auto Installer
 # Author: TandelK
+# Credits : Splewis , PhlexPlexico 
 # Purpose: Get5 Web API Panel installation script
 
 version="0.01"
@@ -15,6 +16,7 @@ function wsgi_create(){
 		if [ -f "/var/www/get5-web/get5.wsgi" ]
 		then
 		echo "Get5.wsgi already exist"
+		break;
 		else
 		cd /var/www/get5-web
 		echo "Creating WSGI Config File"
@@ -46,12 +48,13 @@ select function in install update 'Create WSGI' exit
 do
 case $function in
 	install)
-	#if [ -d "/var/www/get5-web" ] 
-	#		then
-	#		echo "Installation already done and exist inside /var/www/get5-web"
-	#	else
+	if [ -d "/var/www/get5-web" ] 
+			then
+			echo "Installation already done and exist inside /var/www/get5-web"
+		else
 		
 		echo -e "\e[32m Downloading Dependencies \e[39m"
+		
 		sudo apt-get update && apt-get upgrade -y
 		
 		sudo apt-get install build-essential software-properties-common -y
@@ -143,6 +146,7 @@ case $function in
 		mkdir get5/static/resource/csgo/materials/panaroma
 		mkdir get5/static/resource/csgo/materials/panaroma/tournaments
 		mkdir get5/static/resource/csgo/materials/panaroma/tournaments/teams
+		cd /var/www/get5-web/
 		chown -R www-data:www-data logs
 		chown -R www-data:www-data get5/static/resource/csgo/resource/flash/econ/tournaments/teams
 		chown -R www-data:www-data get5/static/resource/csgo/materials/panaroma/tournaments/teams
