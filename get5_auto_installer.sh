@@ -4,7 +4,7 @@
 # Credits : Splewis , PhlexPlexico 
 # Purpose: Get5 Web API Panel installation script
 
-version="0.01"
+version="0.50"
 if [[ $EUID -ne 0 ]]; then
    echo -e "\e[32m This script must be run as root as it require packages to be downloaded \e[39m" 
    exit 1
@@ -42,11 +42,11 @@ function wsgi_create(){
 		}
 
 echo -e "\e[32m  Welcome to Get5 Web Panel Auto Installation script \e[39m"
-PS3="Select the function >"
+PS3="Select the option >"
 
-select function in install update 'Create WSGI' exit
+select option in install update 'Create WSGI' exit
 do
-case $function in
+case $option in
 	install)
 	if [ -d "/var/www/get5-web" ] 
 			then
@@ -93,12 +93,12 @@ case $function in
 			echo -e "Enter Database name"
 			read sqldb
 			echo "Creating User"
-			mysql -uroot -p${sqlrootpswd} -e "CREATE USER ${sqluser}@localhost IDENTIFIED BY '${sqlpass}';"
+			mysql -uroot -p$sqlrootpswd -e "CREATE USER ${sqluser}@localhost IDENTIFIED BY '${sqlpass}';"
 			echo "Creating Database"
-			mysql -uroot -p${sqlrootpswd} -e "CREATE DATABASE ${sqldb} CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
+			mysql -uroot -p$sqlrootpswd -e "CREATE DATABASE ${sqldb} CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
 			echo "Database Created Successfully"
 			echo "Granting Privileges now"
-			mysql -uroot -p${sqlrootpswd} -e "GRANT ALL PRIVILEGES ON ${sqldb}.* TO '${sqluser}'@'localhost' WITH GRANT OPTION;FLUSH PRIVILEGES;"
+			mysql -uroot -p$sqlrootpswd -e "GRANT ALL PRIVILEGES ON ${sqldb}.* TO '${sqluser}'@'localhost' WITH GRANT OPTION;FLUSH PRIVILEGES;"
 			#Only enable this from script if you want to check if database and grant permissions are working or not , just remove '#' from below 4 lines
 			#echo "Checking Database Information"
 			#mysql -uroot -p${sqlrootpswd} -e "SELECT USER,HOST FROM mysql.user;"
@@ -142,11 +142,6 @@ case $function in
 
 		echo "Changing File permissions for required folder"
 		cd /var/www/get5-web/
-		mkdir get5/static/resource/csgo/materials
-		mkdir get5/static/resource/csgo/materials/panaroma
-		mkdir get5/static/resource/csgo/materials/panaroma/tournaments
-		mkdir get5/static/resource/csgo/materials/panaroma/tournaments/teams
-		cd /var/www/get5-web/
 		chown -R www-data:www-data logs
 		chown -R www-data:www-data get5/static/resource/csgo/resource/flash/econ/tournaments/teams
 		chown -R www-data:www-data get5/static/resource/csgo/materials/panaroma/tournaments/teams
@@ -154,7 +149,6 @@ case $function in
 		echo "Copy Instance File"
 		cd /var/www/get5-web/instance
 		cp prod_config.py.default prod_config.py
-		
 		echo -e "Modify settings properly in prod_config.py"
 		
 		wsgi_create
@@ -171,12 +165,12 @@ case $function in
 			source venv/bin/activate
 			pip install -r requirements.txt
 			echo "Doing manager upgrade command"
-			#./manager.py db upgrade
+			./manager.py db upgrade
 			sudo service apache2 restart
 			echo "Update completed. Please do a refresh on webpanel for changes"
 			exit 1
 			else
-			echo "Installation Not Found.Please use install function"
+			echo "Installation Not Found.Please use install option"
 			fi
 		;;
 	'Create WSGI')
@@ -202,5 +196,69 @@ case $function in
 	;;
 	esac
 	done
-
-		
+function apacheconfig() 
+	{
+	echo "Please Enter WebSite Address with no http or https protocol" 
+	read sitename
+	echo "You have entered $sitename"
+	while [[ $sitename == *"http"* || $sitename == *"https"* ]];
+	do
+		echo "Please re-enter Website Address without http or https"
+		read sitename
+		echo "You have enter %sitename"
+	done
+	echo "Enter Admin Email address"
+	read adminemail
+	
+	select protocoltype in http https
+	do
+	case $protocoltype in
+		http)
+			echo "<VirtualHost *:80>" >>$sitename.cnf
+			echo "ServerName $sitename" >>$sitename.cnf
+			echo "ServerAdmin $adminemail" >>$sitename.cnf
+			echo "WSGIScriptAlias / /var/www/get5-web/get5.wsgi" >>$sitename.cnf
+			echo "" >>$sitename.cnf
+			echo "<Directory /var/www/get5>" >>$sitename.cnf
+			echo "	Order deny,allow" >>$sitename.cnf
+			echo "	Allow from all" >>$sitename.cnf
+			echo "	</Directory>" >>$sitename.cnf
+			echo "">>$sitename.cnf
+			echo "Alias /static /var/www/get5-web/get5/static" >>$sitename.cnf
+			echo "<Directory /var/www/get5-web/get5/static>" >>$sitename.cnf
+			echo "	Order allow,deny" >>$sitename.cnf
+			echo "	Allow from all" >>$sitename.cnf
+			echo "</Directory>" >>$sitename.cnf
+			echo "" >>$sitename.cnf
+			echo "ErrorLog ${APACHE_LOG_DIR}/error.log" >>$sitename.cnf
+			echo "LogLevel warn" >>$sitename.cnf
+			echo "CustomLog ${APACHE_LOG_DIR}/access.log combined" >>$sitename.cnf
+			echo "</VirtualHost>" >>$sitename.cnf
+			break;
+			;;
+		https)
+			echo "<VirtualHost *:443>" >>$sitename.cnf
+			echo "ServerName $sitename" >>$sitename.cnf
+			echo "ServerAdmin $adminemail" >>$sitename.cnf
+			echo "WSGIScriptAlias / /var/www/get5-web/get5.wsgi" >>$sitename.cnf
+			echo "" >>$sitename.cnf
+			echo "<Directory /var/www/get5>" >>$sitename.cnf
+			echo "	Order deny,allow" >>$sitename.cnf
+			echo "	Allow from all" >>$sitename.cnf
+			echo "	</Directory>" >>$sitename.cnf
+			echo "">>$sitename.cnf
+			echo "Alias /static /var/www/get5-web/get5/static" >>$sitename.cnf
+			echo "<Directory /var/www/get5-web/get5/static>" >>$sitename.cnf
+			echo "	Order allow,deny" >>$sitename.cnf
+			echo "	Allow from all" >>$sitename.cnf
+			echo "</Directory>" >>$sitename.cnf
+			echo "" >>$sitename.cnf
+			echo "	ErrorLog ${APACHE_LOG_DIR}/error.log" >>$sitename.cnf
+			echo "LogLevel warn" >>$sitename.cnf
+			echo "CustomLog ${APACHE_LOG_DIR}/access.log combined" >>$sitename.cnf
+			echo "</VirtualHost>" >>$sitename.cnf
+			break;
+			;;
+		esac
+		done
+	}
