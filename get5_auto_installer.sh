@@ -271,12 +271,15 @@ case $option in
 			echo "</VirtualHost>" >>$sitename-ssl.cnf
 			echo "">>$sitename-ssl.cnf
 			if [-f /etc/apache2/sites-enabled/$sitename.cnf]
-			
+			then
+				echo "File Already Exist of http Redirect"
+			else
 			echo "<VirtualHost *:80>" >>$sitename.cnf
 			echo "ServerName $sitename" >>$sitename.cnf
 			echo "Redirect Permanent / https://$sitename" >>$sitename.cnf
 			echo "</VirtualHost>" >>$sitename.cnf
 			break;
+			fi
 			;;
 	*) 		
 	echo -e "\e[31m You didnt select correct Option, Please use selection from above \e[39m"
