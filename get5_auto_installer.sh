@@ -196,7 +196,8 @@ case $option in
 	;;
 	esac
 	done
-function apacheconfig() 
+	#Apache Config
+	function apacheconfig() 
 	{
 	echo "Please Enter WebSite Address with no http or https protocol" 
 	read sitename
@@ -205,11 +206,11 @@ function apacheconfig()
 	do
 		echo "Please re-enter Website Address without http or https"
 		read sitename
-		echo "You have enter %sitename"
+		echo "You have entered $sitename"
 	done
 	echo "Enter Admin Email address"
 	read adminemail
-	
+	PS3 = "Please Select Website Protocol Type"
 	select protocoltype in http https
 	do
 	case $protocoltype in
@@ -237,28 +238,51 @@ function apacheconfig()
 			break;
 			;;
 		https)
-			echo "<VirtualHost *:443>" >>$sitename.cnf
+			echo "Enabling SSL Support for SSL"
+			a2enmod ssl
+			echo "Please provide your SSL Certificate Path"
+			read crtpath
+			echo "You have entered $crtpath"
+			while [! -f $crtpath]
+			do
+				echo "File not found , Please enter correct path again"
+				read crtpath
+				echo "You have entered $crtpath"
+			done
+			echo "<VirtualHost *:443>" >>$sitename-ssl.cnf
+			echo "ServerName $sitename" >>$sitename-ssl.cnf
+			echo "ServerAdmin $adminemail" >>$sitename-ssl.cnf
+			echo "WSGIScriptAlias / /var/www/get5-web/get5.wsgi" >>$sitename-ssl.cnf
+			echo "" >>$sitename-ssl.cnf
+			echo "<Directory /var/www/get5>" >>$sitename-ssl.cnf
+			echo "	Order deny,allow" >>$sitename-ssl.cnf
+			echo "	Allow from all" >>$sitename-ssl.cnf
+			echo "	</Directory>" >>$sitename-ssl.cnf
+			echo "">>$sitename-ssl.cnf
+			echo "Alias /static /var/www/get5-web/get5/static" >>$sitename-ssl.cnf
+			echo "<Directory /var/www/get5-web/get5/static>" >>$sitename-ssl.cnf
+			echo "	Order allow,deny" >>$sitename-ssl.cnf
+			echo "	Allow from all" >>$sitename-ssl.cnf
+			echo "</Directory>" >>$sitename-ssl.cnf
+			echo "" >>$sitename-ssl.cnf
+			echo "	ErrorLog ${APACHE_LOG_DIR}/error.log" >>$sitename-ssl.cnf
+			echo "LogLevel warn" >>$sitename-ssl.cnf
+			echo "CustomLog ${APACHE_LOG_DIR}/access.log combined" >>$sitename-ssl.cnf
+			echo "</VirtualHost>" >>$sitename-ssl.cnf
+			echo "">>$sitename-ssl.cnf
+			if [-f /etc/apache2/sites-enabled/$sitename.cnf]
+			
+			echo "<VirtualHost *:80>" >>$sitename.cnf
 			echo "ServerName $sitename" >>$sitename.cnf
-			echo "ServerAdmin $adminemail" >>$sitename.cnf
-			echo "WSGIScriptAlias / /var/www/get5-web/get5.wsgi" >>$sitename.cnf
-			echo "" >>$sitename.cnf
-			echo "<Directory /var/www/get5>" >>$sitename.cnf
-			echo "	Order deny,allow" >>$sitename.cnf
-			echo "	Allow from all" >>$sitename.cnf
-			echo "	</Directory>" >>$sitename.cnf
-			echo "">>$sitename.cnf
-			echo "Alias /static /var/www/get5-web/get5/static" >>$sitename.cnf
-			echo "<Directory /var/www/get5-web/get5/static>" >>$sitename.cnf
-			echo "	Order allow,deny" >>$sitename.cnf
-			echo "	Allow from all" >>$sitename.cnf
-			echo "</Directory>" >>$sitename.cnf
-			echo "" >>$sitename.cnf
-			echo "	ErrorLog ${APACHE_LOG_DIR}/error.log" >>$sitename.cnf
-			echo "LogLevel warn" >>$sitename.cnf
-			echo "CustomLog ${APACHE_LOG_DIR}/access.log combined" >>$sitename.cnf
+			echo "Redirect Permanent / https://$sitename" >>$sitename.cnf
 			echo "</VirtualHost>" >>$sitename.cnf
 			break;
 			;;
-		esac
-		done
+	*) 		
+	echo -e "\e[31m You didnt select correct Option, Please use selection from above \e[39m"
+	;;
+	esac
+	done
+	echo "Restarting Apache2 Service"
+	service apache2 restart
 	}
