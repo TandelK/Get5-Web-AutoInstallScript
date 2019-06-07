@@ -196,6 +196,15 @@ case $option in
 		echo -e "\e[31m Exiting Script \e[39m"
 		exit 1
 	;;
+	'Create Apache Config')
+		if [! -f /var/www/get5-web]
+		then
+			echo "You dont seem to have Get5-Web Installed"
+		else
+		apacheconfig
+		break;
+		fi
+	;;
 	*) 		
 	echo -e "\e[31m You didnt select correct Option, Please use selection from above \e[39m"
 	;;
@@ -220,69 +229,104 @@ case $option in
 			do
 				case $protocoltype in
 					http)
-						echo "<VirtualHost *:80>" >>$sitename.cnf
-						echo "ServerName $sitename" >>$sitename.cnf
-						echo "ServerAdmin $adminemail" >>$sitename.cnf
-						echo "WSGIScriptAlias / /var/www/get5-web/get5.wsgi" >>$sitename.cnf
-						echo "" >>$sitename.cnf
-						echo "<Directory /var/www/get5>" >>$sitename.cnf
-						echo "	Order deny,allow" >>$sitename.cnf
-						echo "	Allow from all" >>$sitename.cnf
-						echo "	</Directory>" >>$sitename.cnf
-						echo "">>$sitename.cnf
-						echo "Alias /static /var/www/get5-web/get5/static" >>$sitename.cnf
-						echo "<Directory /var/www/get5-web/get5/static>" >>$sitename.cnf
-						echo "	Order allow,deny" >>$sitename.cnf
-						echo "	Allow from all" >>$sitename.cnf
-						echo "</Directory>" >>$sitename.cnf
-						echo "" >>$sitename.cnf
-						echo "ErrorLog ${APACHE_LOG_DIR}/error.log" >>$sitename.cnf
-						echo "LogLevel warn" >>$sitename.cnf
-						echo "CustomLog ${APACHE_LOG_DIR}/access.log combined" >>$sitename.cnf
-						echo "</VirtualHost>" >>$sitename.cnf
+						echo "<VirtualHost *:80>" >>$sitename.conf
+						echo "ServerName $sitename" >>$sitename.conf
+						echo "ServerAdmin $adminemail" >>$sitename.conf
+						echo "WSGIScriptAlias / /var/www/get5-web/get5.wsgi" >>$sitename.conf
+						echo "" >>$sitename.conf
+						echo "<Directory /var/www/get5>" >>$sitename.conf
+						echo "	Order deny,allow" >>$sitename.conf
+						echo "	Allow from all" >>$sitename.conf
+						echo "	</Directory>" >>$sitename.conf
+						echo "">>$sitename.conf
+						echo "Alias /static /var/www/get5-web/get5/static" >>$sitename.conf
+						echo "<Directory /var/www/get5-web/get5/static>" >>$sitename.conf
+						echo "	Order allow,deny" >>$sitename.conf
+						echo "	Allow from all" >>$sitename.conf
+						echo "</Directory>" >>$sitename.conf
+						echo "" >>$sitename.conf
+						echo "ErrorLog ${APACHE_LOG_DIR}/error.log" >>$sitename.conf
+						echo "LogLevel warn" >>$sitename.conf
+						echo "CustomLog ${APACHE_LOG_DIR}/access.log combined" >>$sitename.conf
+						echo "</VirtualHost>" >>$sitename.conf
 						break;
 					;;
 					https)
-						echo "Enabling SSL Support for SSL"
+						echo "Enabling SSL Support"
 						a2enmod ssl
+						##SSL Certificate
 						echo "Please provide your SSL Certificate Path"
 						read crtpath
 						echo "You have entered $crtpath"
-						while [! -f $crtpath]
-							do
-								echo "File not found , Please enter correct path again"
-								read crtpath
-								echo "You have entered $crtpath"
-							done
-						echo "<VirtualHost *:443>" >>$sitename-ssl.cnf
-						echo "ServerName $sitename" >>$sitename-ssl.cnf
-						echo "ServerAdmin $adminemail" >>$sitename-ssl.cnf
-						echo "WSGIScriptAlias / /var/www/get5-web/get5.wsgi" >>$sitename-ssl.cnf
-						echo "" >>$sitename-ssl.cnf
-						echo "<Directory /var/www/get5>" >>$sitename-ssl.cnf
-						echo "	Order deny,allow" >>$sitename-ssl.cnf
-						echo "	Allow from all" >>$sitename-ssl.cnf
-						echo "	</Directory>" >>$sitename-ssl.cnf
-						echo "">>$sitename-ssl.cnf
-						echo "Alias /static /var/www/get5-web/get5/static" >>$sitename-ssl.cnf
-						echo "<Directory /var/www/get5-web/get5/static>" >>$sitename-ssl.cnf
-						echo "	Order allow,deny" >>$sitename-ssl.cnf
-						echo "	Allow from all" >>$sitename-ssl.cnf
-						echo "</Directory>" >>$sitename-ssl.cnf
-						echo "" >>$sitename-ssl.cnf
-						echo "	ErrorLog ${APACHE_LOG_DIR}/error.log" >>$sitename-ssl.cnf
-						echo "LogLevel warn" >>$sitename-ssl.cnf
-						echo "CustomLog ${APACHE_LOG_DIR}/access.log combined" >>$sitename-ssl.cnf
-						echo "</VirtualHost>" >>$sitename-ssl.cnf
-						echo "">>$sitename-ssl.cnf
-						if [-f /etc/apache2/sites-enabled/$sitename.cnf]
+						while [ ! -f "$crtpath" ];
+						do 
+							echo "File not found , Please re-enter Certificate Path"
+							read crtpath
+							echo "You have entered $crtpath"
+						done
+						while [[ ${crtpath##*.} != 'crt' ]];
+						do 
+							echo "The file entered does not have .crt extension, Please give the path again"
+							read crtpath
+							echo "You have entered now $crtpath"
+						done
+						echo "Please provide your SSL Key"
+						##SSL Key
+						read crtkey
+						while [ ! -f "$crtkey" ];
+						do 
+							echo "File not found , Please re-enter Private Key Path"
+							read crtkey
+							echo "You have entered $crtkey"
+						done
+						while [[ ${crtkey##*.} != 'key' ]];
+						do 
+							echo "The file entered does not have .key extension, Please give the path again"
+							read crtkey
+							echo "You have entered now $crtkey"
+						done
+						echo "<IfModule mod_ssl.c>">>$sitename-ssl.conf
+						echo "<VirtualHost *:443>" >>$sitename-ssl.conf
+						echo "ServerName $sitename" >>$sitename-ssl.conf
+						echo "ServerAdmin $adminemail" >>$sitename-ssl.conf
+						echo "WSGIScriptAlias / /var/www/get5-web/get5.wsgi" >>$sitename-ssl.conf
+						echo "" >>$sitename-ssl.conf
+						echo "<Directory /var/www/get5>" >>$sitename-ssl.conf
+						echo "	Order deny,allow" >>$sitename-ssl.conf
+						echo "	Allow from all" >>$sitename-ssl.conf
+						echo "	</Directory>" >>$sitename-ssl.conf
+						echo "">>$sitename-ssl.conf
+						echo "Alias /static /var/www/get5-web/get5/static" >>$sitename-ssl.conf
+						echo "<Directory /var/www/get5-web/get5/static>" >>$sitename-ssl.conf
+						echo "	Order allow,deny" >>$sitename-ssl.conf
+						echo "	Allow from all" >>$sitename-ssl.conf
+						echo "</Directory>" >>$sitename-ssl.conf
+						echo "" >>$sitename-ssl.conf
+						echo "ErrorLog ${APACHE_LOG_DIR}/error.log" >>$sitename-ssl.conf
+						echo "LogLevel warn" >>$sitename-ssl.conf
+						echo "CustomLog ${APACHE_LOG_DIR}/access.log combined" >>$sitename-ssl.conf
+						echo "">>$sitename-ssl.conf
+						echo "SSLEngine on">>$sitename-ssl.conf
+						echo "SSLCertificateFile $crtpath">>$sitename-ssl.conf
+						echo "SSLCertificateKeyFile $crtkey">>$sitename-ssl.conf
+						echo "">>$sitename-ssl.conf
+						echo '<FilesMatch "\.(cgi|shtml|phtml|php)$">'>>$sitename-ssl.conf
+						echo "SSLOptions +StdEnvVars">>$sitename-ssl.conf
+						echo "</FilesMatch>">>$sitename-ssl.conf
+						echo "<Directory /usr/lib/cgi-bin>">>$sitename-ssl.conf
+						echo "SSLOptions +StdEnvVars">>$sitename-ssl.conf
+						echo "</Directory>">>$sitename-ssl.conf
+						echo "</VirtualHost>" >>$sitename-ssl.conf
+						echo "</IfModule>">>$sitename-ssl.conf
+						
+						if [-f /etc/apache2/sites-enabled/$sitename.conf]
 							then
 								echo "File Already Exist of http Redirect"
 							else
-								echo "<VirtualHost *:80>" >>$sitename.cnf
-								echo "ServerName $sitename" >>$sitename.cnf
-								echo "Redirect Permanent / https://$sitename" >>$sitename.cnf
-								echo "</VirtualHost>" >>$sitename.cnf
+								echo "<VirtualHost *:80>" >>$sitename.conf
+								echo "ServerName $sitename" >>$sitename.conf
+								echo "Redirect Permanent / https://$sitename" >>$sitename.conf
+								echo "</VirtualHost>" >>$sitename.conf
 								break;
 						fi
 					;;
