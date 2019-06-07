@@ -7,7 +7,9 @@ This Auto Install Script Includes
 2) Update : Auto Update the Panel and it will automatically run the Upgrade Commands like Requirements or Migrations upgrade after Updates. 
 
 The below 2 options are generally not required as they are auto created with Install Function
+
 3) Create WSGI : You can manually create WSGI Script if you are having issues.
+
 4) Apache Configuration : If you have Get5-Web Installed and forgot to do Apache2 Config this will help you creating the same. 
 The SSL Module will require Certificate File in .crt format as well as Private Key in .key format already existing in the server. Please remember the paths of the SSL Certificate as well as Private Key paths as they are required during HTTPS Version installation. 
 
