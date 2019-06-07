@@ -5,6 +5,7 @@ Are you having hard time installing Get5-Web Panel ? Well here is a quick Auto I
 This Auto Install Script Includes 
 1) Install : Selection of Master Branch which is stable as well as Development branch is available 
 2) Update : Auto Update the Panel and it will automatically run the Upgrade Commands like Requirements or Migrations upgrade after Updates. 
+
 The below 2 options are generally not required as they are auto created with Install Function
 3) Create WSGI : You can manually create WSGI Script if you are having issues.
 4) Apache Configuration : If you have Get5-Web Installed and forgot to do Apache2 Config this will help you creating the same. 
