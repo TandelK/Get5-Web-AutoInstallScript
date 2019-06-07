@@ -46,14 +46,150 @@ fi
 		fi
 	fi
 	}
+	
+#Apache Config
+		function apacheconfig() 
+		{
+			echo "Please Enter Panel Address with no http or https protocol" 
+			read sitename
+			echo "You have entered $sitename"
+			while [[ $sitename == *"http"* || $sitename == *"https"* ]];
+				do
+					echo "Please re-enter Website Address without http or https"
+					read -r sitename
+					echo "You have entered $sitename"
+				done
+			echo "Enter Admin Email address: "; 
+			read adminemail
+				cd /etc/apache2/sites-enabled/
+				if [ -f /etc/apache2/sites-enabled/$sitename.conf ]
+				then
+					echo "Sitename Apache Config already exist in sites-enabled"
+				else
+				PS3="Please Select Website Protocol Type >"
+				select protocoltype in http https
+					do
+					case $protocoltype in
+					http)
+							echo "<VirtualHost *:80>" >>$sitename.conf
+							echo "ServerName $sitename" >>$sitename.conf
+							echo "ServerAdmin $adminemail" >>$sitename.conf
+							echo "WSGIScriptAlias / /var/www/get5-web/get5.wsgi" >>$sitename.conf
+							echo "" >>$sitename.conf
+							echo "<Directory /var/www/get5>" >>$sitename.conf
+							echo "	Order deny,allow" >>$sitename.conf
+							echo "	Allow from all" >>$sitename.conf
+							echo "	</Directory>" >>$sitename.conf
+							echo "">>$sitename.conf
+							echo "Alias /static /var/www/get5-web/get5/static" >>$sitename.conf
+							echo "<Directory /var/www/get5-web/get5/static>" >>$sitename.conf
+							echo "	Order allow,deny" >>$sitename.conf
+							echo "	Allow from all" >>$sitename.conf
+							echo "</Directory>" >>$sitename.conf
+							echo "" >>$sitename.conf
+							echo "ErrorLog ${APACHE_LOG_DIR}/error.log" >>$sitename.conf
+							echo "LogLevel warn" >>$sitename.conf
+							echo "CustomLog ${APACHE_LOG_DIR}/access.log combined" >>$sitename.conf
+							echo "</VirtualHost>" >>$sitename.conf
+						break;
+					;;
+					https)
+						echo "Enabling SSL Support"
+						a2enmod ssl
+						##SSL Certificate
+						echo "Please provide your SSL Certificate Path"
+						read crtpath
+						echo "You have entered $crtpath"
+						while [ ! -f "$crtpath" ];
+						do 
+							echo "File not found , Please re-enter Certificate Path"
+							read crtpath
+							echo "You have entered $crtpath"
+						done
+						while [[ ${crtpath##*.} != 'crt' ]];
+						do 
+							echo "The file entered does not have .crt extension, Please give the path again"
+							read crtpath
+							echo "You have entered now $crtpath"
+						done
+						echo "Please provide your SSL Key"
+						##SSL Key
+						read crtkey
+						while [ ! -f "$crtkey" ];
+						do 
+							echo "File not found , Please re-enter Private Key Path"
+							read crtkey
+							echo "You have entered $crtkey"
+						done
+						while [[ ${crtkey##*.} != 'key' ]];
+						do 
+							echo "The file entered does not have .key extension, Please give the path again"
+							read crtkey
+							echo "You have entered now $crtkey"
+						done
+						echo "<IfModule mod_ssl.c>">>$sitename-ssl.conf
+						echo "<VirtualHost *:443>" >>$sitename-ssl.conf
+						echo "ServerName $sitename" >>$sitename-ssl.conf
+						echo "ServerAdmin $adminemail" >>$sitename-ssl.conf
+						echo "WSGIScriptAlias / /var/www/get5-web/get5.wsgi" >>$sitename-ssl.conf
+						echo "" >>$sitename-ssl.conf
+						echo "<Directory /var/www/get5>" >>$sitename-ssl.conf
+						echo "	Order deny,allow" >>$sitename-ssl.conf
+						echo "	Allow from all" >>$sitename-ssl.conf
+						echo "	</Directory>" >>$sitename-ssl.conf
+						echo "">>$sitename-ssl.conf
+						echo "Alias /static /var/www/get5-web/get5/static" >>$sitename-ssl.conf
+						echo "<Directory /var/www/get5-web/get5/static>" >>$sitename-ssl.conf
+						echo "	Order allow,deny" >>$sitename-ssl.conf
+						echo "	Allow from all" >>$sitename-ssl.conf
+						echo "</Directory>" >>$sitename-ssl.conf
+						echo "" >>$sitename-ssl.conf
+						echo "ErrorLog ${APACHE_LOG_DIR}/error.log" >>$sitename-ssl.conf
+						echo "LogLevel warn" >>$sitename-ssl.conf
+						echo "CustomLog ${APACHE_LOG_DIR}/access.log combined" >>$sitename-ssl.conf
+						echo "">>$sitename-ssl.conf
+						echo "SSLEngine on">>$sitename-ssl.conf
+						echo "SSLCertificateFile $crtpath">>$sitename-ssl.conf
+						echo "SSLCertificateKeyFile $crtkey">>$sitename-ssl.conf
+						echo "">>$sitename-ssl.conf
+						echo '<FilesMatch "\.(cgi|shtml|phtml|php)$">'>>$sitename-ssl.conf
+						echo "SSLOptions +StdEnvVars">>$sitename-ssl.conf
+						echo "</FilesMatch>">>$sitename-ssl.conf
+						echo "<Directory /usr/lib/cgi-bin>">>$sitename-ssl.conf
+						echo "SSLOptions +StdEnvVars">>$sitename-ssl.conf
+						echo "</Directory>">>$sitename-ssl.conf
+						echo "</VirtualHost>" >>$sitename-ssl.conf
+						echo "</IfModule>">>$sitename-ssl.conf
+						
+						if [ -f /etc/apache2/sites-enabled/$sitename.conf]
+							then
+								echo "File Already Exist of http Redirect"
+							else
+								echo "<VirtualHost *:80>" >>$sitename.conf
+								echo "ServerName $sitename" >>$sitename.conf
+								echo "Redirect Permanent / https://$sitename" >>$sitename.conf
+								echo "</VirtualHost>" >>$sitename.conf
+								break;
+						fi
+					;;
+					*) 		
+						echo -e "\e[31m You didnt select correct Option, Please use selection from above \e[39m"
+					;;
+					esac
+					done
+					fi
+					echo "Restarting Apache2 Service"
+					service apache2 restart
+		}
 
+##Web Installation
 echo -e "\e[32m  Welcome to Get5 Web Panel Auto Installation script \e[39m"
 PS3="Select the option >"
 
-select option in install update 'Create WSGI' exit
+select option in Install Update 'Create WSGI' 'Create Apache Config' exit
 do
 case $option in
-	install)
+	Install)
 		if [ -d "/var/www/get5-web" ] 
 		then
 			echo "Installation already done and exist inside /var/www/get5-web ."
@@ -156,11 +292,15 @@ case $option in
 			cp prod_config.py.default prod_config.py
 			echo -e "Modify settings properly in prod_config.py"
 		
+			echo "Creating Get5.wsgi"
 			wsgi_create
+			
+			echo "Creating Apache Config"
+			apacheconfig
 			break;
 		fi
 	;;
-	update)
+	Update)
 		if [ -d "/var/www/get5-web" ] 
 			then
 			cd /var/www/get5-web
@@ -170,7 +310,13 @@ case $option in
 			source venv/bin/activate
 			pip install -r requirements.txt
 			echo "Doing manager upgrade command"
-			./manager.py db upgrade
+			if [ -f /var/www/get5-web/instance/prod_config.py]
+			then 
+				./manager.py db upgrade
+			else
+				echo "You seems to not have added prod_config.py file"
+			fi
+			echo "Restarting Apache2 Service"
 			sudo service apache2 restart
 			echo "Update completed. Please do a refresh on webpanel for changes"
 			exit 1
@@ -197,12 +343,11 @@ case $option in
 		exit 1
 	;;
 	'Create Apache Config')
-		if [! -f /var/www/get5-web]
+		if [ -d "/var/www/get5-web" ]
 		then
-			echo "You dont seem to have Get5-Web Installed"
-		else
 		apacheconfig
-		break;
+		else
+		echo "You dont seem to have Get5-Web Installed"
 		fi
 	;;
 	*) 		
@@ -210,131 +355,3 @@ case $option in
 	;;
 	esac
 	done
-		#Apache Config
-		function apacheconfig() 
-		{
-			echo "Please Enter WebSite Address with no http or https protocol" 
-			read sitename
-			echo "You have entered $sitename"
-			while [[ $sitename == *"http"* || $sitename == *"https"* ]];
-				do
-					echo "Please re-enter Website Address without http or https"
-					read sitename
-					echo "You have entered $sitename"
-				done
-			echo "Enter Admin Email address"
-			read adminemail
-			PS3 = "Please Select Website Protocol Type"
-			select protocoltype in http https
-			do
-				case $protocoltype in
-					http)
-						echo "<VirtualHost *:80>" >>$sitename.conf
-						echo "ServerName $sitename" >>$sitename.conf
-						echo "ServerAdmin $adminemail" >>$sitename.conf
-						echo "WSGIScriptAlias / /var/www/get5-web/get5.wsgi" >>$sitename.conf
-						echo "" >>$sitename.conf
-						echo "<Directory /var/www/get5>" >>$sitename.conf
-						echo "	Order deny,allow" >>$sitename.conf
-						echo "	Allow from all" >>$sitename.conf
-						echo "	</Directory>" >>$sitename.conf
-						echo "">>$sitename.conf
-						echo "Alias /static /var/www/get5-web/get5/static" >>$sitename.conf
-						echo "<Directory /var/www/get5-web/get5/static>" >>$sitename.conf
-						echo "	Order allow,deny" >>$sitename.conf
-						echo "	Allow from all" >>$sitename.conf
-						echo "</Directory>" >>$sitename.conf
-						echo "" >>$sitename.conf
-						echo "ErrorLog ${APACHE_LOG_DIR}/error.log" >>$sitename.conf
-						echo "LogLevel warn" >>$sitename.conf
-						echo "CustomLog ${APACHE_LOG_DIR}/access.log combined" >>$sitename.conf
-						echo "</VirtualHost>" >>$sitename.conf
-						break;
-					;;
-					https)
-						echo "Enabling SSL Support"
-						a2enmod ssl
-						##SSL Certificate
-						echo "Please provide your SSL Certificate Path"
-						read crtpath
-						echo "You have entered $crtpath"
-						while [ ! -f "$crtpath" ];
-						do 
-							echo "File not found , Please re-enter Certificate Path"
-							read crtpath
-							echo "You have entered $crtpath"
-						done
-						while [[ ${crtpath##*.} != 'crt' ]];
-						do 
-							echo "The file entered does not have .crt extension, Please give the path again"
-							read crtpath
-							echo "You have entered now $crtpath"
-						done
-						echo "Please provide your SSL Key"
-						##SSL Key
-						read crtkey
-						while [ ! -f "$crtkey" ];
-						do 
-							echo "File not found , Please re-enter Private Key Path"
-							read crtkey
-							echo "You have entered $crtkey"
-						done
-						while [[ ${crtkey##*.} != 'key' ]];
-						do 
-							echo "The file entered does not have .key extension, Please give the path again"
-							read crtkey
-							echo "You have entered now $crtkey"
-						done
-						echo "<IfModule mod_ssl.c>">>$sitename-ssl.conf
-						echo "<VirtualHost *:443>" >>$sitename-ssl.conf
-						echo "ServerName $sitename" >>$sitename-ssl.conf
-						echo "ServerAdmin $adminemail" >>$sitename-ssl.conf
-						echo "WSGIScriptAlias / /var/www/get5-web/get5.wsgi" >>$sitename-ssl.conf
-						echo "" >>$sitename-ssl.conf
-						echo "<Directory /var/www/get5>" >>$sitename-ssl.conf
-						echo "	Order deny,allow" >>$sitename-ssl.conf
-						echo "	Allow from all" >>$sitename-ssl.conf
-						echo "	</Directory>" >>$sitename-ssl.conf
-						echo "">>$sitename-ssl.conf
-						echo "Alias /static /var/www/get5-web/get5/static" >>$sitename-ssl.conf
-						echo "<Directory /var/www/get5-web/get5/static>" >>$sitename-ssl.conf
-						echo "	Order allow,deny" >>$sitename-ssl.conf
-						echo "	Allow from all" >>$sitename-ssl.conf
-						echo "</Directory>" >>$sitename-ssl.conf
-						echo "" >>$sitename-ssl.conf
-						echo "ErrorLog ${APACHE_LOG_DIR}/error.log" >>$sitename-ssl.conf
-						echo "LogLevel warn" >>$sitename-ssl.conf
-						echo "CustomLog ${APACHE_LOG_DIR}/access.log combined" >>$sitename-ssl.conf
-						echo "">>$sitename-ssl.conf
-						echo "SSLEngine on">>$sitename-ssl.conf
-						echo "SSLCertificateFile $crtpath">>$sitename-ssl.conf
-						echo "SSLCertificateKeyFile $crtkey">>$sitename-ssl.conf
-						echo "">>$sitename-ssl.conf
-						echo '<FilesMatch "\.(cgi|shtml|phtml|php)$">'>>$sitename-ssl.conf
-						echo "SSLOptions +StdEnvVars">>$sitename-ssl.conf
-						echo "</FilesMatch>">>$sitename-ssl.conf
-						echo "<Directory /usr/lib/cgi-bin>">>$sitename-ssl.conf
-						echo "SSLOptions +StdEnvVars">>$sitename-ssl.conf
-						echo "</Directory>">>$sitename-ssl.conf
-						echo "</VirtualHost>" >>$sitename-ssl.conf
-						echo "</IfModule>">>$sitename-ssl.conf
-						
-						if [-f /etc/apache2/sites-enabled/$sitename.conf]
-							then
-								echo "File Already Exist of http Redirect"
-							else
-								echo "<VirtualHost *:80>" >>$sitename.conf
-								echo "ServerName $sitename" >>$sitename.conf
-								echo "Redirect Permanent / https://$sitename" >>$sitename.conf
-								echo "</VirtualHost>" >>$sitename.conf
-								break;
-						fi
-					;;
-					*) 		
-						echo -e "\e[31m You didnt select correct Option, Please use selection from above \e[39m"
-					;;
-					esac
-					done
-					echo "Restarting Apache2 Service"
-					service apache2 restart
-		}
