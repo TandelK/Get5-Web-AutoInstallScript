@@ -1,10 +1,10 @@
 #!/bin/bash
-# Project: Get5 Web API Auto Installer
+# Project: Get5 Web API Auto Installer for PhlexPlexico Get5-Web
 # Author: TandelK
 # Credits : Splewis , PhlexPlexico 
 # Purpose: Get5 Web API Panel installation script
-
-version="0.50"
+# Website : 
+version="0.55"
 if [[ $EUID -ne 0 ]]; then
    echo -e "\e[32m This script must be run as root as it require packages to be downloaded \e[39m" 
    exit 1
@@ -12,7 +12,8 @@ fi
 
 
 ##Get5 WSGI Create Function
-	function wsgi_create(){
+	function wsgi_create()
+	{
 	if [ -f "/var/www/get5-web/get5.wsgi" ]
 	then
 		echo "Get5.wsgi already exist"
@@ -50,7 +51,8 @@ fi
 #Apache Config
 		function apacheconfig() 
 		{
-			echo "Please Enter Panel Address with no http or https protocol" 
+			cd /etc/apache2/sites-enabled/
+			echo "Please Enter Panel Address without http or https protocol" 
 			read sitename
 			echo "You have entered $sitename"
 			while [[ $sitename == *"http"* || $sitename == *"https"* ]];
@@ -61,10 +63,10 @@ fi
 				done
 			echo "Enter Admin Email address: "; 
 			read adminemail
-				cd /etc/apache2/sites-enabled/
-				if [ -f /etc/apache2/sites-enabled/$sitename.conf ]
+				if [[ -f /etc/apache2/sites-enabled/$sitename.conf && -f /etc/apache2/sites-enabled/$sitename-ssl.conf ]];
 				then
 					echo "Sitename Apache Config already exist in sites-enabled"
+					echo "Request you to please manually update them or Delete the Existing Files"
 				else
 				PS3="Please Select Website Protocol Type >"
 				select protocoltype in http https
@@ -112,7 +114,7 @@ fi
 							read crtpath
 							echo "You have entered now $crtpath"
 						done
-						echo "Please provide your SSL Key"
+						echo "Please provide your SSL Prviate Key Path"
 						##SSL Key
 						read crtkey
 						while [ ! -f "$crtkey" ];
@@ -169,8 +171,8 @@ fi
 								echo "ServerName $sitename" >>$sitename.conf
 								echo "Redirect Permanent / https://$sitename" >>$sitename.conf
 								echo "</VirtualHost>" >>$sitename.conf
-								break;
 						fi
+						break;
 					;;
 					*) 		
 						echo -e "\e[31m You didnt select correct Option, Please use selection from above \e[39m"
@@ -180,6 +182,7 @@ fi
 					fi
 					echo "Restarting Apache2 Service"
 					service apache2 restart
+					break;
 		}
 
 ##Web Installation
@@ -206,7 +209,9 @@ case $option in
 			sudo apt-get install virtualenv libmysqlclient-dev -y
 
 			#Checking Git Package available or not
+
 			echo -e "\e[32mChecking Git Command Status \e[39m"
+
 			gitavailable='git'
 			if ! dpkg -s $gitavailable >/dev/null 2>&1; then
 				echo -e"\e[32mInstalling Git"
@@ -215,18 +220,21 @@ case $option in
 			fi
 
 			#Checking MySQL Server installed or not
+
 			echo -e "\e[32mChecking MySQL Server Status \e[39m"
+
 			sqlavailable='mysql-server'
 			if ! dpkg -s $sqlavailable >/dev/null 2>&1; then
 				echo -e"\e[32mInstalling MySQL Server"
 				sudo apt-get install $sqlavailable 
 				service mysql start
-				else echo -e "\e[32m MySQL already Installed \e[39m"
+				else echo -e "\e[32m MySQL Server already Installed \e[39m"
 			fi
 
 		#MYSQL Information
 			echo -e " \e[32m MySQL Server Database Creation \e[39m"
 			echo "Enter Root Password"
+
 			read -s sqlrootpswd
 			echo -e "Enter your Username"
 			read sqluser
@@ -297,6 +305,9 @@ case $option in
 			
 			echo "Creating Apache Config"
 			apacheconfig
+
+			echo "Changing Directory back to /var/www/get5-web"
+			cd /var/www/get5-web
 			break;
 		fi
 	;;
