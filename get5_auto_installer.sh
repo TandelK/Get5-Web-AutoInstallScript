@@ -4,7 +4,12 @@
 # Credits : Splewis , PhlexPlexico 
 # Purpose: Get5 Web API Panel installation script
 # Website : 
-version="0.55"
+version="0.75"
+
+# Fix for Bash Script via Wget getting skipped in starting
+read -n1 -r -p "Press any key to continue..."
+
+
 if [[ $EUID -ne 0 ]]; then
    echo -e "\e[32m This script must be run as root as it require packages to be downloaded \e[39m" 
    exit 1
@@ -63,10 +68,11 @@ fi
 				done
 			echo "Enter Admin Email address: "; 
 			read adminemail
-				if [[ -f /etc/apache2/sites-enabled/$sitename.conf && -f /etc/apache2/sites-enabled/$sitename-ssl.conf ]];
+				if [[ -f /etc/apache2/sites-enabled/$sitename.conf || -f /etc/apache2/sites-enabled/$sitename-ssl.conf ]];
 				then
 					echo "Sitename Apache Config already exist in sites-enabled"
 					echo "Request you to please manually update them or Delete the Existing Files"
+					echo "File location is at /etc/apache2/sites-enabled/$sitename.conf and for HTTPS it is at /etc/apache2/sites-enabled/$sitename-ssl.conf"
 				else
 				PS3="Please Select Website Protocol Type >"
 				select protocoltype in http https
@@ -102,32 +108,20 @@ fi
 						echo "Please provide your SSL Certificate Path"
 						read crtpath
 						echo "You have entered $crtpath"
-						while [ ! -f "$crtpath" ];
+						while [[ ! -f "$crtpath" || ${crtpath##*.} != 'crt' ]];
 						do 
-							echo "File not found , Please re-enter Certificate Path"
+							echo "Please check if the file exists and it also contains .crt extension"
 							read crtpath
 							echo "You have entered $crtpath"
-						done
-						while [[ ${crtpath##*.} != 'crt' ]];
-						do 
-							echo "The file entered does not have .crt extension, Please give the path again"
-							read crtpath
-							echo "You have entered now $crtpath"
 						done
 						echo "Please provide your SSL Prviate Key Path"
 						##SSL Key
 						read crtkey
-						while [ ! -f "$crtkey" ];
+						while [[ ! -f "$crtkey"  || ${crtkey##*.} != 'key' ]];
 						do 
-							echo "File not found , Please re-enter Private Key Path"
+							echo "Please check the file exists and it also contains .key extension"
 							read crtkey
 							echo "You have entered $crtkey"
-						done
-						while [[ ${crtkey##*.} != 'key' ]];
-						do 
-							echo "The file entered does not have .key extension, Please give the path again"
-							read crtkey
-							echo "You have entered now $crtkey"
 						done
 						echo "<IfModule mod_ssl.c>">>$sitename-ssl.conf
 						echo "<VirtualHost *:443>" >>$sitename-ssl.conf
@@ -166,6 +160,7 @@ fi
 						if [ -f /etc/apache2/sites-enabled/$sitename.conf]
 							then
 								echo "File Already Exist of http Redirect"
+								break;
 							else
 								echo "<VirtualHost *:80>" >>$sitename.conf
 								echo "ServerName $sitename" >>$sitename.conf
@@ -182,7 +177,6 @@ fi
 					fi
 					echo "Restarting Apache2 Service"
 					service apache2 restart
-					break;
 		}
 
 ##Web Installation
@@ -218,7 +212,6 @@ case $option in
 				sudo apt-get install $gitavailable 
 				else echo -e "\e[32m Git Already Installed \e[39m"
 			fi
-
 			#Checking MySQL Server installed or not
 
 			echo -e "\e[32mChecking MySQL Server Status \e[39m"
@@ -230,31 +223,30 @@ case $option in
 				service mysql start
 				else echo -e "\e[32m MySQL Server already Installed \e[39m"
 			fi
-
-		#MYSQL Information
+			echo "Restarting MySQL Service"
+			#This is due to any systems have any kind of MySQL Errors can be restarted with this.
+			service mysql restart
+			
+			#MYSQL Information
 			echo -e " \e[32m MySQL Server Database Creation \e[39m"
-			echo "Enter Root Password"
-
-			read -s sqlrootpswd
-			echo -e "Enter your Username"
-			read sqluser
-			echo -e "Enter Password | Please remember this for future reference"
-			read -s sqlpass
-			echo -e "Enter Database name"
-			read sqldb
-			echo "Creating User"
-			mysql -uroot -p$sqlrootpswd -e "CREATE USER ${sqluser}@localhost IDENTIFIED BY '${sqlpass}';"
-			echo "Creating Database"
-			mysql -uroot -p$sqlrootpswd -e "CREATE DATABASE ${sqldb} CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
-			echo "Database Created Successfully"
-			echo "Granting Privileges now"
-			mysql -uroot -p$sqlrootpswd -e "GRANT ALL PRIVILEGES ON ${sqldb}.* TO '${sqluser}'@'localhost' WITH GRANT OPTION;FLUSH PRIVILEGES;"
-			#Only enable this from script if you want to check if database and grant permissions are working or not , just remove '#' from below 4 lines
-			#echo "Checking Database Information"
-			#mysql -uroot -p${sqlrootpswd} -e "SELECT USER,HOST FROM mysql.user;"
-			#mysql -uroot -p${sqlrootpswd} -e "show databases;"
-			#mysql -uroot -p${sqlrootpswd} -e "SHOW GRANTS FOR '${sqluser}'@'localhost';"
-
+			SQLPASSWORDGET5="$(openssl rand -base64 12)"
+			if [ -f /root/.my.cnf ]; then
+				mysql -e "CREATE DATABASE get5 CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
+				mysql -e "CREATE USER get5@localhost IDENTIFIED BY '$SQLPASSWORDGET5';"
+				mysql -e "GRANT ALL PRIVILEGES ON get5.* TO 'get5'@'localhost' WITH GRANT OPTION;"
+				mysql -e "FLUSH PRIVILEGES;"
+			# If /root/.my.cnf doesn't exist then it'll ask for root password   
+			else
+				echo "Please enter root user MySQL password!"
+				read -p "YOUR SQL ROOT PASSWORD: " -e -i $rootpasswd rootpasswd
+				until mysql -u root -p$rootpassword  -e ";" ; do
+					read -p "Can't connect, please retry: " -e -i $rootpasswd rootpasswd
+				done
+				mysql -u root -p$rootpasswd -e "CREATE DATABASE get5 CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
+				mysql -u root -p$rootpasswd -e "CREATE USER get5@localhost IDENTIFIED BY '$SQLPASSWORDGET5';"
+				mysql -u root -p$rootpasswd -e "GRANT ALL PRIVILEGES ON get5.* TO 'get5'@'localhost' WITH GRANT OPTION;"
+				mysql -u root -p$rootpasswd -e "FLUSH PRIVILEGES;"
+			fi
 			echo -e "\e[32mDownloading Get5 Web Panel \e[39m"
 
 			cd /var/www/
@@ -295,14 +287,97 @@ case $option in
 			chown -R www-data:www-data logs
 			chown -R www-data:www-data get5/static/resource/csgo
 	
-			echo "Copy Instance File"
-			cd /var/www/get5-web/instance
-			cp prod_config.py.default prod_config.py
-			echo -e "Modify settings properly in prod_config.py"
-		
+				#Prod Config File Creation and settings
+				#Steam API Key
+				echo "Enter your Steam API Key"
+				read steamapi
+				while [[ $steamapi == "" ]];
+				do
+					echo "You did not enter anything. Please re-enter Steam API Key"
+					read steamapi
+				done
+			echo "Your Steam API Key is $steamapi"
+
+			#Random Secret Key for Flask Cookies
+			echo "Enter Random Secret Key for Flask Cookies"
+			read secretkey
+			while [[ $secretkey == "" ]];
+				do
+				echo "You did not enter anything. Please re-enter Steam API Key"
+				read secretkey
+			done
+
+			#Database Key for Encryption of User Password as well as RCON Passwords of servers.
+			dbkey=$(openssl rand -base64 12)
+
+			echo "Your DB Key is $dbkey. This will encrypt user passwords in database."
+
+			echo "##### You must change these before running
+				SQLALCHEMY_DATABASE_URI = 'mysql://get5:$SQLPASSWORDGET5@localhost/get5'  # Sqlalchemy database connection info
+				STEAM_API_KEY = '$steamapi'  # See https://steamcommunity.com/dev/apikey
+				SECRET_KEY = '$secretkey'  # Secret key used for flask cookies
+				DATABASE_KEY = '$dbkey'  # Used for encryption on database. MUST BE 16 BYTES.
+				WEBPANEL_NAME = 'Get5' # Used for the title header on the webpage.
+				
+				##### Everything below this line is optional to change
+				
+				import os
+				
+				location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__), '..', 'logs'))
+				LOG_PATH = os.path.join(location, 'get5.log')
+
+				DEBUG = False
+				TESTING = False
+				
+				SQLALCHEMY_TRACK_MODIFICATIONS = False
+				USER_MAX_SERVERS = 10  # Max servers a user can create
+				USER_MAX_TEAMS = 100  # Max teams a user can create
+				USER_MAX_MATCHES = 1000  # Max matches a user can create
+				USER_MAX_SEASONS = 100 # Max seasons a user can create
+				DEFAULT_PAGE = '/matches'
+				ADMINS_ACCESS_ALL_MATCHES = False  # Whether admins can always access any match admin panel
+				CREATE_MATCH_TITLE_TEXT = False # Whether settings for 'match title text' and 'team text' appear on 'create a match page'
+				
+				# All maps that are selectable in the 'create a match' page
+				MAPLIST = [
+					'de_dust2',
+					'de_inferno',
+					'de_mirage',
+					'de_nuke',
+					'de_overpass',
+					'de_train',
+					'de_vertigo',
+					'de_season',
+					'de_cbble',
+					'de_cache',
+				]
+				
+				# Maps whose checkbox is selected (in the mappool) by default in the 'create a match' page
+				DEFAULT_MAPLIST = [
+					'de_dust2',
+					'de_inferno',
+					'de_mirage',
+					'de_nuke',
+					'de_overpass',
+					'de_train',
+					'de_vertigo',
+				]
+
+				# You may set the server to allow allow whitelisted steamids to login.
+				# By default any user can login and create teams/servers/matches.
+				WHITELISTED_IDS = []
+				
+				# Admins will have extra access to create 'public' teams, and if ADMINS_ACCESS_ALL_MATCHES
+				# is set, they can access admin info for all matches (can pause, cancel, etc.) ANY match.
+				ADMIN_IDS = []" >> /var/www/get5-web/instance/prod_config.py
+			
+			echo "File is created under /var/www/get5-web/instance/prod_config.py Please open the file after installation and edit Map Pools and Add Admin IDs"
+			
+			#WSGI File
 			echo "Creating Get5.wsgi"
 			wsgi_create
 			
+			#Apache Config Creation
 			echo "Creating Apache Config"
 			apacheconfig
 
