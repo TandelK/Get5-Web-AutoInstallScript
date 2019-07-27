@@ -7,6 +7,7 @@
 version="0.75"
 
 # Fix for Bash Script via Wget getting skipped in starting
+echo "Press Any Key to Continue"
 read -n1 -r -p "Press any key to continue..."
 
 
@@ -31,23 +32,23 @@ fi
 		else
 			cd /var/www/get5-web
 			echo "Creating WSGI Config File"
-
-			echo "#!/usr/bin/python"  >> get5.wsgi
-			echo "activate_this = '/var/www/get5-web/venv/bin/activate_this.py'" >> get5.wsgi
-			echo 	"execfile(activate_this, dict(__file__=activate_this))" >> get5.wsgi
-			echo 	"">> get5.wsgi
-			echo 	"import sys">> get5.wsgi
-			echo 	"import logging">> get5.wsgi
-			echo 	"logging.basicConfig(stream=sys.stderr)">> get5.wsgi
-			echo 	"">> get5.wsgi
-			echo 	'folder = "/var/www/get5-web"'>> get5.wsgi
-			echo 	"if not folder in sys.path:">> get5.wsgi
-			echo 	"sys.path.insert(0, folder)">> get5.wsgi
-			echo 	"sys.path.insert(0,"")">> get5.wsgi
-			echo 	"">> get5.wsgi
-			echo 	"from get5 import app as application">> get5.wsgi
-			echo 	"import get5">> get5.wsgi
-			echo 	"get5.register_blueprints()" >> get5.wsgi
+			echo "#!/usr/bin/python">> /var/www/get5-web/get5.wsgi
+			echo "">> /var/www/get5-web/get5.wsgi
+			echo "activate_this = '/var/www/get5-web/venv/bin/activate_this.py'">> /var/www/get5-web/get5.wsgi
+			echo "execfile(activate_this, dict(__file__=activate_this))">> /var/www/get5-web/get5.wsgi
+			echo "">> /var/www/get5-web/get5.wsgi
+			echo "import sys">> /var/www/get5-web/get5.wsgi
+			echo "import logging">> /var/www/get5-web/get5.wsgi
+			echo "logging.basicConfig(stream=sys.stderr)">> /var/www/get5-web/get5.wsgi
+			echo "">> /var/www/get5-web/get5.wsgi
+			echo 'folder = "/var/www/get5-web"'>> /var/www/get5-web/get5.wsgi
+			echo "if not folder in sys.path:">> /var/www/get5-web/get5.wsgi
+			echo "    sys.path.insert(0, folder)">> /var/www/get5-web/get5.wsgi
+			echo "sys.path.insert(0,"")">> /var/www/get5-web/get5.wsgi
+			echo "">> /var/www/get5-web/get5.wsgi
+			echo "from get5 import app as application">> /var/www/get5-web/get5.wsgi
+			echo "import get5">> /var/www/get5-web/get5.wsgi
+			echo "get5.register_blueprints()">> /var/www/get5-web/get5.wsgi
 			chmod +x get5.wsgi
 		fi
 	fi
