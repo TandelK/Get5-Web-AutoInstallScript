@@ -4,7 +4,16 @@ Are you having hard time installing Get5-Web Panel ? Well here is a quick Auto I
 
 For Installing just simply copy the below code and paste it in Terminal of Ubuntu System.
 
-`wget -O - https://raw.githubusercontent.com/TandelK/Get5-AutoInstallScript/master/get5_auto_installer.sh | bash`
+`wget -O - https://raw.githubusercontent.com/TandelK/Get5-AutoInstallScript/master/get5_auto_installer.sh`
+
+Change the file permission of executing on the system.
+`chmod +x get5_auto_installer.sh `
+
+
+And run it as .sh script with  command of 
+`./get5_auto_installer.sh`
+
+The reason why wget Bash script does not work is due to selection base in start
 
 # This Auto Install Script Includes 
 1) Install : Selection of Master Branch which is stable as well as Development branch is available 
