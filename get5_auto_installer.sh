@@ -232,7 +232,7 @@ case $option in
 			echo -e " \e[32m MySQL Server Database Creation \e[39m"
 			
 			get5dbpass="$(openssl rand -base64 12)"
-			echo "Just for safety if you want to save it Get5 User Password if $get5dbpass"
+			echo "Just for safety if you want to save it Get5 User Password is $get5dbpass"
 			
 			# If /root/.my.cnf exist it will auto create database as it already has MySQL Root Password
 			
@@ -332,7 +332,7 @@ case $option in
 			done
 			
 			#Main Admin Steam ID 64
-			echo "Enter your Steam ID 64 (You can get it from steamid.io"
+			echo "Enter your Steam ID 64 (You can get it from steamid.io)"
 			read adminsteamid
 			while [[ $adminsteamid == "" ]];
 				do
