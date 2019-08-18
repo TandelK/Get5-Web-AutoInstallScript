@@ -3,20 +3,17 @@
 Are you having hard time installing Get5-Web Panel ? Well here is a quick Auto Install Scirpt created by me for installing https://github.com/PhlexPlexico/get5-web version. The reason why i selected Phlex version is due to advance updates and more options added by him. 
 
 For Installing just simply copy the below code and paste it in Terminal of Ubuntu System.
-
-`wget -O - https://raw.githubusercontent.com/TandelK/Get5-AutoInstallScript/master/get5_auto_installer.sh`
-
 Change the file permission of executing on the system.
-`chmod +x get5_auto_installer.sh `
+And run it as .sh script
 
-
-And run it as .sh script with  command of 
+`wget https://raw.githubusercontent.com/TandelK/Get5-AutoInstallScript/master/get5_auto_installer.sh && chmod +x get5_auto_installer.sh`
 `./get5_auto_installer.sh`
 
 The reason why wget Bash script does not work is due to selection base in start
 
 # This Auto Install Script Includes 
 1) Install : Selection of Master Branch which is stable as well as Development branch is available 
+
 2) Update : Auto Update the Panel and it will automatically run the Upgrade Commands like Requirements or Migrations upgrade after Updates. 
 
 The below 2 options are generally not required as they are auto created with Install Function
@@ -27,3 +24,6 @@ The below 2 options are generally not required as they are auto created with Ins
 The SSL Module will require Certificate File in .crt format as well as Private Key in .key format already existing in the server. Please remember the paths of the SSL Certificate as well as Private Key paths as they are required during HTTPS Version installation. 
 
 5) Exit - Meh !! Just Quit the Script . Why did i even make it function 
+
+Notes : 
+Sometime after update of development branch i would recommend you to manually check prod_config file if there are any updates.

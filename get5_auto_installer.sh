@@ -230,22 +230,43 @@ case $option in
 			
 			#MYSQL Information
 			echo -e " \e[32m MySQL Server Database Creation \e[39m"
-			SQLPASSWORDGET5="$(openssl rand -base64 12)"
-			if [ -f /root/.my.cnf ]; then
+			
+			get5dbpass="$(openssl rand -base64 12)"
+			echo "Just for safety if you want to save it Get5 User Password if $get5dbpass"
+			
+			# If /root/.my.cnf exist it will auto create database as it already has MySQL Root Password
+			
+			if [ -f /root/.my.cnf ];
+			then
+			
+				echo "Creating Database Get5 with Collate utf8mb4_general_ci"
 				mysql -e "CREATE DATABASE get5 CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
-				mysql -e "CREATE USER get5@localhost IDENTIFIED BY '$SQLPASSWORDGET5';"
+				
+				echo "Creating Get5 User with Random Password"
+				mysql -e "CREATE USER get5@localhost IDENTIFIED BY '$get5dbpass';"
+				
+				echo "Grant Privileges to Get5 User to Get5 Database"
 				mysql -e "GRANT ALL PRIVILEGES ON get5.* TO 'get5'@'localhost' WITH GRANT OPTION;"
+				
 				mysql -e "FLUSH PRIVILEGES;"
+				
 			# If /root/.my.cnf doesn't exist then it'll ask for root password   
 			else
 				echo "Please enter root user MySQL password!"
-				read -p "YOUR SQL ROOT PASSWORD: " -e -i $rootpasswd rootpasswd
-				until mysql -u root -p$rootpassword  -e ";" ; do
-					read -p "Can't connect, please retry: " -e -i $rootpasswd rootpasswd
+					read -p "YOUR SQL ROOT PASSWORD: " -s rootpasswd
+					until mysql -u root -p$rootpasswd  -e ";" ; do
+					read -p "Can't connect, please retry: " -s rootpasswd
 				done
+				
+				echo "Creating Database Get5 with Collate utf8mb4_general_ci"
 				mysql -u root -p$rootpasswd -e "CREATE DATABASE get5 CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
-				mysql -u root -p$rootpasswd -e "CREATE USER get5@localhost IDENTIFIED BY '$SQLPASSWORDGET5';"
+				
+				echo "Creating Get5 User with Random Password"
+				mysql -u root -p$rootpasswd -e "CREATE USER get5@localhost IDENTIFIED BY '$get5dbpass';"
+				
+				echo "Grant Privileges to Get5 User to Get5 Database"
 				mysql -u root -p$rootpasswd -e "GRANT ALL PRIVILEGES ON get5.* TO 'get5'@'localhost' WITH GRANT OPTION;"
+				
 				mysql -u root -p$rootpasswd -e "FLUSH PRIVILEGES;"
 			fi
 			echo -e "\e[32mDownloading Get5 Web Panel \e[39m"
@@ -280,9 +301,11 @@ case $option in
 			echo "Start Creating Virtual Environment and Download Requirements"
 
 			virtualenv venv
+			
 			source venv/bin/activate
+			
 			pip install -r requirements.txt
-
+			
 			echo "Changing File permissions for required folder"
 			cd /var/www/get5-web/
 			chown -R www-data:www-data logs
@@ -304,8 +327,17 @@ case $option in
 			read secretkey
 			while [[ $secretkey == "" ]];
 				do
-				echo "You did not enter anything. Please re-enter Steam API Key"
+				echo "You did not enter anything. Please re-enter Secret Key"
 				read secretkey
+			done
+			
+			#Main Admin Steam ID 64
+			echo "Enter your Steam ID 64 (You can get it from steamid.io"
+			read adminsteamid
+			while [[ $adminsteamid == "" ]];
+				do
+				echo "You did not enter anything. Please re-enter Admin Steam ID 64 Key"
+				read adminsteamid
 			done
 
 			#Database Key for Encryption of User Password as well as RCON Passwords of servers.
@@ -313,66 +345,72 @@ case $option in
 
 			echo "Your DB Key is $dbkey. This will encrypt user passwords in database."
 
-			echo "##### You must change these before running
-				SQLALCHEMY_DATABASE_URI = 'mysql://get5:$SQLPASSWORDGET5@localhost/get5'  # Sqlalchemy database connection info
-				STEAM_API_KEY = '$steamapi'  # See https://steamcommunity.com/dev/apikey
-				SECRET_KEY = '$secretkey'  # Secret key used for flask cookies
-				DATABASE_KEY = '$dbkey'  # Used for encryption on database. MUST BE 16 BYTES.
-				WEBPANEL_NAME = 'Get5' # Used for the title header on the webpage.
-				
-				##### Everything below this line is optional to change
-				
-				import os
-				
-				location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__), '..', 'logs'))
-				LOG_PATH = os.path.join(location, 'get5.log')
-
-				DEBUG = False
-				TESTING = False
-				
-				SQLALCHEMY_TRACK_MODIFICATIONS = False
-				USER_MAX_SERVERS = 10  # Max servers a user can create
-				USER_MAX_TEAMS = 100  # Max teams a user can create
-				USER_MAX_MATCHES = 1000  # Max matches a user can create
-				USER_MAX_SEASONS = 100 # Max seasons a user can create
-				DEFAULT_PAGE = '/matches'
-				ADMINS_ACCESS_ALL_MATCHES = False  # Whether admins can always access any match admin panel
-				CREATE_MATCH_TITLE_TEXT = False # Whether settings for 'match title text' and 'team text' appear on 'create a match page'
-				
-				# All maps that are selectable in the 'create a match' page
-				MAPLIST = [
-					'de_dust2',
-					'de_inferno',
-					'de_mirage',
-					'de_nuke',
-					'de_overpass',
-					'de_train',
-					'de_vertigo',
-					'de_season',
-					'de_cbble',
-					'de_cache',
-				]
-				
-				# Maps whose checkbox is selected (in the mappool) by default in the 'create a match' page
-				DEFAULT_MAPLIST = [
-					'de_dust2',
-					'de_inferno',
-					'de_mirage',
-					'de_nuke',
-					'de_overpass',
-					'de_train',
-					'de_vertigo',
-				]
-
-				# You may set the server to allow allow whitelisted steamids to login.
-				# By default any user can login and create teams/servers/matches.
-				WHITELISTED_IDS = []
-				
-				# Admins will have extra access to create 'public' teams, and if ADMINS_ACCESS_ALL_MATCHES
-				# is set, they can access admin info for all matches (can pause, cancel, etc.) ANY match.
-				ADMIN_IDS = []" >> /var/www/get5-web/instance/prod_config.py
+			echo "##### You must change these before running" >> /var/www/get5-web/instance/prod_config.py
+				 "SQLALCHEMY_DATABASE_URI = 'mysql://get5:$get5dbpass@localhost/get5'  # Sqlalchemy database connection info" >> /var/www/get5-web/instance/prod_config.py
+				 "STEAM_API_KEY = '$steamapi'  # See https://steamcommunity.com/dev/apikey" >> /var/www/get5-web/instance/prod_config.py
+				 "SECRET_KEY = '$secretkey'  # Secret key used for flask cookies" >> /var/www/get5-web/instance/prod_config.py
+				 "DATABASE_KEY = '$dbkey'  # Used for encryption on database. MUST BE 16 BYTES." >> /var/www/get5-web/instance/prod_config.py
+				 "WEBPANEL_NAME = 'Get5' # Used for the title header on the webpage." >> /var/www/get5-web/instance/prod_config.py
+				 "" >> /var/www/get5-web/instance/prod_config.py
+				 "##### Everything below this line is optional to change" >> /var/www/get5-web/instance/prod_config.py
+				 "" >> /var/www/get5-web/instance/prod_config.py
+				 "import os" >> /var/www/get5-web/instance/prod_config.py
+				 "" >> /var/www/get5-web/instance/prod_config.py
+				 "location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__), '..', 'logs'))" >> /var/www/get5-web/instance/prod_config.py
+				 "LOG_PATH = os.path.join(location, 'get5.log')" >> /var/www/get5-web/instance/prod_config.py
+				 "" >> /var/www/get5-web/instance/prod_config.py
+				 "DEBUG = False" >> /var/www/get5-web/instance/prod_config.py
+				 "TESTING = False" >> /var/www/get5-web/instance/prod_config.py
+				 "" >> /var/www/get5-web/instance/prod_config.py
+				 "SQLALCHEMY_TRACK_MODIFICATIONS = False" >> /var/www/get5-web/instance/prod_config.py
+				 "USER_MAX_SERVERS = 10  # Max servers a user can create" >> /var/www/get5-web/instance/prod_config.py
+				 "USER_MAX_TEAMS = 100  # Max teams a user can create" >> /var/www/get5-web/instance/prod_config.py
+				 "USER_MAX_MATCHES = 1000  # Max matches a user can create" >> /var/www/get5-web/instance/prod_config.py
+				 "USER_MAX_SEASONS = 100 # Max seasons a user can create" >> /var/www/get5-web/instance/prod_config.py
+				 "DEFAULT_PAGE = '/matches'" >> /var/www/get5-web/instance/prod_config.py
+				 "ADMINS_ACCESS_ALL_MATCHES = False  # Whether admins can always access any match admin panel" >> /var/www/get5-web/instance/prod_config.py
+				 "CREATE_MATCH_TITLE_TEXT = False # Whether settings for 'match title text' and 'team text' appear on 'create a match page'" >> /var/www/get5-web/instance/prod_config.py
+				 "" >> /var/www/get5-web/instance/prod_config.py
+				 "# All maps that are selectable in the 'create a match' page" >> /var/www/get5-web/instance/prod_config.py
+				 "MAPLIST = [" >> /var/www/get5-web/instance/prod_config.py
+				 "	'de_dust2'," >> /var/www/get5-web/instance/prod_config.py
+				 "	'de_inferno'," >> /var/www/get5-web/instance/prod_config.py
+				 "	'de_mirage'," >> /var/www/get5-web/instance/prod_config.py
+				 "	'de_nuke'," >> /var/www/get5-web/instance/prod_config.py
+				 "	'de_overpass'," >> /var/www/get5-web/instance/prod_config.py
+				 "	'de_train'," >> /var/www/get5-web/instance/prod_config.py
+				 "	'de_vertigo'," >> /var/www/get5-web/instance/prod_config.py
+				 "	'de_season'," >> /var/www/get5-web/instance/prod_config.py
+				 "	'de_cbble'," >> /var/www/get5-web/instance/prod_config.py
+				 "	'de_cache'," >> /var/www/get5-web/instance/prod_config.py
+				 "]" >> /var/www/get5-web/instance/prod_config.py
+				 "" >> /var/www/get5-web/instance/prod_config.py
+				 "# Maps whose checkbox is selected (in the mappool) by default in the 'create a match' page" >> /var/www/get5-web/instance/prod_config.py
+				 "DEFAULT_MAPLIST = [" >> /var/www/get5-web/instance/prod_config.py
+				 "	'de_dust2'," >> /var/www/get5-web/instance/prod_config.py
+				 "	'de_inferno'," >> /var/www/get5-web/instance/prod_config.py
+				 "	'de_mirage'," >> /var/www/get5-web/instance/prod_config.py
+				 "	'de_nuke'," >> /var/www/get5-web/instance/prod_config.py
+				 "	'de_overpass'," >> /var/www/get5-web/instance/prod_config.py
+				 "	'de_train'," >> /var/www/get5-web/instance/prod_config.py
+				 "	'de_vertigo'," >> /var/www/get5-web/instance/prod_config.py
+				 "]" >> /var/www/get5-web/instance/prod_config.py
+				 "" >> /var/www/get5-web/instance/prod_config.py
+				 "# You may set the server to allow allow whitelisted steamids to login." >> /var/www/get5-web/instance/prod_config.py
+				 "# By default any user can login and create teams/servers/matches." >> /var/www/get5-web/instance/prod_config.py
+				 "WHITELISTED_IDS = ['$adminsteamid']" >> /var/www/get5-web/instance/prod_config.py
+				 "" >> /var/www/get5-web/instance/prod_config.py
+				 "# Admins will have extra access to create 'public' teams, and if ADMINS_ACCESS_ALL_MATCHES" >> /var/www/get5-web/instance/prod_config.py
+				 "# is set, they can access admin info for all matches (can pause, cancel, etc.) ANY match." >> /var/www/get5-web/instance/prod_config.py
+				 "ADMIN_IDS = ['$adminsteamid']" >> /var/www/get5-web/instance/prod_config.py
 			
 			echo "File is created under /var/www/get5-web/instance/prod_config.py Please open the file after installation and edit Map Pools and Add Admin IDs"
+			
+			#Database Creation 
+			echo "Creating Database Structure."
+			cd /var/www/get5-web/
+			
+			./manager.py db upgrade
 			
 			#WSGI File
 			echo "Creating Get5.wsgi"
