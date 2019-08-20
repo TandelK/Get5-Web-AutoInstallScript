@@ -7,9 +7,7 @@
 version="0.75"
 
 # Fix for Bash Script via Wget getting skipped in starting
-echo "Press Any Key to Continue"
 read -n1 -r -p "Press any key to continue..."
-
 
 if [[ $EUID -ne 0 ]]; then
    echo -e "\e[32m This script must be run as root as it require packages to be downloaded \e[39m" 
@@ -25,7 +23,7 @@ fi
 		echo "Get5.wsgi already exist"
 		break;
 	else
-		if [! -d "/var/www/get5-web"]
+		if [ ! -d "/var/www/get5-web" ]
 		then
 			echo "Get5 Web Installation not detected , Please install Get5-Web first"
 			break;
@@ -357,12 +355,11 @@ case $option in
 			
 			#Copy & Modify Prod Config file
 			cp prod_config.py.default prod_config.py
-			sed -i "s+mysql://user:password@host/db+mysql://get5:$get5dbpass@localhost/get5+g" prod_config.py
-			sed -i "s+STEAM_API_KEY = '???'+STEAM_API_KEY = '$steamapi'+g" prod_config.py
-			sed -i "s+SECRET_KEY = '???'+SECRET_KEY = '$secretkey'+g" prod_config.py
-			sed -i "s+ADMIN_IDS = []+ADMIN_IDS = ['$adminsteamid']+g" prod_config.py
-			sed -i "s+WEBPANEL_NAME = 'Get5'+WEBPANEL_NAME = '$wpanelname'+g" prod_config.py
-			sed -i "s+DATABASE_KEY = '???'+DATABASE_KEY = '$dbkey'+g" prod_config.py
+			sed -i "s|mysql://user:password@host/db|mysql://get5:$get5dbpass@localhost/get5|g" prod_config.py
+			sed -i "s|STEAM_API_KEY = '???'|STEAM_API_KEY = '$steamapi'|g" prod_config.py
+			sed -i "s|SECRET_KEY = '???'|SECRET_KEY = '$secretkey'|g" prod_config.py
+			sed -i "s|WEBPANEL_NAME = 'Get5'|WEBPANEL_NAME = '$wpanelname'|g" prod_config.py
+			sed -i "s|DATABASE_KEY = '???'|DATABASE_KEY = '$dbkey'|g" prod_config.py
 			echo "File is created under /var/www/get5-web/instance/prod_config.py Please open the file after installation and edit Map Pools and Add User IDs"
 			
 			#Database Creation 
