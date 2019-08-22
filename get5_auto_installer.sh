@@ -362,7 +362,7 @@ case $option in
 			file="prod_config.py"
 			
 			sed -i "s|mysql://user:password@host/db|mysql://get5:$get5dbpass@localhost/get5|g" $file
-			sed -i "s|STEAM_APIi_KEY = '???'|STEAM_API_KEY = '$steamapi'|g" $file
+			sed -i "s|STEAM_API_KEY = '???'|STEAM_API_KEY = '$steamapi'|g" $file
 			sed -i "s|SECRET_KEY = '???'|SECRET_KEY = '$secretkey'|g" $file
 			sed -i "s|WEBPANEL_NAME = 'Get5'|WEBPANEL_NAME = '$wpanelname'|g" $file
 			sed -i "s|DATABASE_KEY = '???'|DATABASE_KEY = '$dbkey'|g" $file
