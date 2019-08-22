@@ -4,7 +4,7 @@
 # Credits : Splewis , PhlexPlexico 
 # Purpose: Get5 Web API Panel installation script
 # Website : 
-version="0.75"
+version="0.80"
 
 # Fix for Bash Script via Wget getting skipped in starting
 read -n1 -r -p "Press any key to continue..."
@@ -30,9 +30,6 @@ fi
 		else
 
 			cd /var/www/get5-web
-			echo "Changing File permissions for required folder"
-			chown -R www-data:www-data logs
-			chown -R www-data:www-data get5/static/resource/csgo
 			echo "Creating WSGI Config File"
 			echo "#!/usr/bin/python">> /var/www/get5-web/get5.wsgi
 			echo "">> /var/www/get5-web/get5.wsgi
@@ -46,7 +43,7 @@ fi
 			echo 'folder = "/var/www/get5-web"'>> /var/www/get5-web/get5.wsgi
 			echo "if not folder in sys.path:">> /var/www/get5-web/get5.wsgi
 			echo "    sys.path.insert(0, folder)">> /var/www/get5-web/get5.wsgi
-			echo "sys.path.insert(0,"")">> /var/www/get5-web/get5.wsgi
+			echo 'sys.path.insert(0,"")'>> /var/www/get5-web/get5.wsgi
 			echo "">> /var/www/get5-web/get5.wsgi
 			echo "from get5 import app as application">> /var/www/get5-web/get5.wsgi
 			echo "import get5">> /var/www/get5-web/get5.wsgi
@@ -303,13 +300,11 @@ case $option in
 			echo "Start Creating Virtual Environment and Download Requirements"
 
 			virtualenv venv
-			
 			source venv/bin/activate
-			
 			pip install -r requirements.txt
 			
 
-				#Prod Config File Creation and settings
+			#Prod Config File Creation and settings
 			cd /var/www/get5-web/instance
 		        
 				#Steam API Key
@@ -350,7 +345,7 @@ case $option in
 			done
 
 			#Database Key for Encryption of User Password as well as RCON Passwords of servers.
-			dbkey=$(openssl rand -base64 12)
+			dbkey="$(openssl rand -base64 12)"
 			echo "Your DB Key is $dbkey. This will encrypt user passwords in database."
 			
 			#Copy & Modify Prod Config file
