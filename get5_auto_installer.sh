@@ -30,6 +30,7 @@ fi
 		else
 
 			cd /var/www/get5-web
+			echo "Changing File permissions for required folder"
 			chown -R www-data:www-data logs
 			chown -R www-data:www-data get5/static/resource/csgo
 			echo "Creating WSGI Config File"
