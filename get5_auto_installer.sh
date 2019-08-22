@@ -332,7 +332,7 @@ case $option in
 			done
 			
 			#Main Admin Steam ID 64
-			echo "Enter your Steam ID 64 (You can get it from steamid.io)"
+			echo "Admin's Steam ID 64 (Please ensure values are separated by a comma.)"
 			read adminsteamid
 			while [[ $adminsteamid == "" ]];
 				do
@@ -354,14 +354,22 @@ case $option in
 			echo "Your DB Key is $dbkey. This will encrypt user passwords in database."
 			
 			#Copy & Modify Prod Config file
-			cp prod_config.py.default prod_config.py
-			sed -i "s|mysql://user:password@host/db|mysql://get5:$get5dbpass@localhost/get5|g" prod_config.py
-			sed -i "s|STEAM_API_KEY = '???'|STEAM_API_KEY = '$steamapi'|g" prod_config.py
-			sed -i "s|SECRET_KEY = '???'|SECRET_KEY = '$secretkey'|g" prod_config.py
-			sed -i "s|WEBPANEL_NAME = 'Get5'|WEBPANEL_NAME = '$wpanelname'|g" prod_config.py
-			sed -i "s|DATABASE_KEY = '???'|DATABASE_KEY = '$dbkey'|g" prod_config.py
-			echo "File is created under /var/www/get5-web/instance/prod_config.py Please open the file after installation and edit Map Pools and Add User IDs"
+			echo "Creating Prod Config File"
+			cd /var/www/get5-web/instance
 			
+			cp prod_config.py.default prod_config.py
+			
+			file="prod_config.py"
+			
+			sed -i "s|mysql://user:password@host/db|mysql://get5:$get5dbpass@localhost/get5|g" $file
+			sed -i "s|STEAM_APIi_KEY = '???'|STEAM_API_KEY = '$steamapi'|g" $file
+			sed -i "s|SECRET_KEY = '???'|SECRET_KEY = '$secretkey'|g" $file
+			sed -i "s|WEBPANEL_NAME = 'Get5'|WEBPANEL_NAME = '$wpanelname'|g" $file
+			sed -i "s|DATABASE_KEY = '???'|DATABASE_KEY = '$dbkey'|g" $file
+			sed -i "s|ADMIN_IDS = \[.*\]|ADMIN_IDS = ['$adminsteamid']|g" $file
+			
+			echo "File is created under /var/www/get5-web/instance/prod_config.py Please open the file after installation and edit Map Pools and Add User IDs"
+
 			#Database Creation 
 			echo "Creating Database Structure."
 			cd /var/www/get5-web/
