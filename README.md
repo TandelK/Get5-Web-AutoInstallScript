@@ -7,6 +7,7 @@ Change the file permission of executing on the system.
 And run it as .sh script
 
 `wget https://raw.githubusercontent.com/TandelK/Get5-AutoInstallScript/master/get5_auto_installer.sh && chmod +x get5_auto_installer.sh`
+
 `./get5_auto_installer.sh`
 
 The reason why wget Bash script does not work is due to selection base in start
