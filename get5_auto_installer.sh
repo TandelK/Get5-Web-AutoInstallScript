@@ -28,7 +28,10 @@ fi
 			echo "Get5 Web Installation not detected , Please install Get5-Web first"
 			break;
 		else
+
 			cd /var/www/get5-web
+			chown -R www-data:www-data logs
+			chown -R www-data:www-data get5/static/resource/csgo
 			echo "Creating WSGI Config File"
 			echo "#!/usr/bin/python">> /var/www/get5-web/get5.wsgi
 			echo "">> /var/www/get5-web/get5.wsgi
@@ -304,11 +307,7 @@ case $option in
 			
 			pip install -r requirements.txt
 			
-			echo "Changing File permissions for required folder"
-			cd /var/www/get5-web/
-			chown -R www-data:www-data logs
-			chown -R www-data:www-data get5/static/resource/csgo
-	
+
 				#Prod Config File Creation and settings
 			cd /var/www/get5-web/instance
 		        
@@ -368,6 +367,12 @@ case $option in
 			
 			./manager.py db upgrade
 			
+			#Changing File Permisions
+			echo "Changing File permissions for required folder"
+			cd /var/www/get5-web/
+			chown -R www-data:www-data logs
+			chown -R www-data:www-data get5/static/resource/csgo
+
 			#WSGI File
 			echo "Creating Get5.wsgi"
 			wsgi_create
