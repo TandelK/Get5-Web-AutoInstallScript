@@ -30,7 +30,7 @@ Notes :
 Sometime after update of development branch i would recommend you to manually check prod_config file if there are any updates.
 
 
-######**Credits**
+###### **Credits**
 1) Splewis - For the original Get5 Plugin
 2) PhlexPlexico - For his wonderful modification to Get5-Web version will all new functions
 3) xe1os - For testing and helping out fix problems 
