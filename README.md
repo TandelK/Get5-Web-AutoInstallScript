@@ -12,7 +12,7 @@ And run it as .sh script
 
 The reason why wget Bash script does not work is due to selection base in start
 
-# This Auto Install Script Includes 
+## This Auto Install Script Includes 
 1) Install : Selection of Master Branch which is stable as well as Development branch is available 
 
 2) Update : Auto Update the Panel and it will automatically run the Upgrade Commands like Requirements or Migrations upgrade after Updates. 
@@ -30,7 +30,7 @@ Notes :
 Sometime after update of development branch i would recommend you to manually check prod_config file if there are any updates.
 
 
-Credits
+######**Credits**
 1) Splewis - For the original Get5 Plugin
 2) PhlexPlexico - For his wonderful modification to Get5-Web version will all new functions
 3) xe1os - For testing and helping out fix problems 
