@@ -157,7 +157,7 @@ fi
 						echo "</VirtualHost>" >>$sitename-ssl.conf
 						echo "</IfModule>">>$sitename-ssl.conf
 						
-						if [ -f /etc/apache2/sites-enabled/$sitename.conf]
+						if [ -f "/etc/apache2/sites-enabled/$sitename.conf"]
 							then
 								echo "File Already Exist of http Redirect"
 								break;
@@ -177,6 +177,7 @@ fi
 					fi
 					echo "Restarting Apache2 Service"
 					service apache2 restart
+					break;
 		}
 
 ##Web Installation
@@ -343,7 +344,26 @@ case $option in
 				echo "You did not enter anything. Please enter the name for Web Panel"
 				read wpanelname
 			done
+			
+			#Admin Access all Matches
+			echo "Can Admin Access all the Matches ? Use True or False (Case Sensitive)"
+			read adminaccess
+			while [[ "$adminaccess" != @("True"|"False") ]]
+				do
+				echo "Please enter only True or False"
+				read adminaccess
+			done
+			echo "You have entered $adminaccess for Admin Can Access all the Matches"
 
+			#Create Match Title Text
+			echo "Do you want to create Match Title Text Use True or False (Case Sensitive)"
+			read matchttext 
+			while [[ "$matchttext" != @("True"|"False") ]]
+				do
+				echo "Please enter only True or False"
+				read matchttext
+			done
+			
 			#Database Key for Encryption of User Password as well as RCON Passwords of servers.
 			dbkey="$(openssl rand -base64 12)"
 			echo "Your DB Key is $dbkey. This will encrypt user passwords in database."
@@ -361,8 +381,10 @@ case $option in
 			sed -i "s|SECRET_KEY = '???'|SECRET_KEY = '$secretkey'|g" $file
 			sed -i "s|WEBPANEL_NAME = 'Get5'|WEBPANEL_NAME = '$wpanelname'|g" $file
 			sed -i "s|DATABASE_KEY = '???'|DATABASE_KEY = '$dbkey'|g" $file
-			sed -i "s|ADMIN_IDS = \[.*\]|ADMIN_IDS = ['$adminsteamid']|g" $file
-			echo "['$adminsteamid']" | sed -i "s:,:\',\':g" $file
+			sed -i "s|ADMINS_ACCESS_ALL_MATCHES = False|ADMINS_ACCESS_ALL_MATCHES = $adminaccess|g" $file
+			sed -i "s|CREATE_MATCH_TITLE_TEXT = False|CREATE_MATCH_TITLE_TEXT = $matchttext|g" $file
+			sed -i "62 s|ADMIN_IDS = \[.*\]|ADMIN_IDS = ['$adminsteamid']|g" $file
+			echo "['$adminsteamid']" | sed -i "62 s:,:\',\':g" $file
 			
 			echo "File is created under /var/www/get5-web/instance/prod_config.py Please open the file after installation and edit Map Pools and Add User IDs"
 
