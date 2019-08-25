@@ -326,13 +326,14 @@ case $option in
 				read secretkey
 			done
 			
-			#Main Admin Steam ID 64
-			echo "Admin's Steam ID 64 (Please ensure values are separated by a comma.)"
-			read adminsteamid
-			while [[ $adminsteamid == "" ]];
-				do
-				echo "You did not enter anything. Please re-enter Admin Steam ID 64 Key"
-				read adminsteamid
+			#Main Super Admin & Admin Steam ID 64
+			
+			echo "Super Admin's Steam ID 64 (Please ensure values are separated by a comma.)"
+                        read superadmins
+                        while [[ $superadmins == "" ]];
+                                do
+                                echo "You did not enter anything. Please re-enter Admin Steam ID 64 Key"
+                                read superadmins
 			done
 
 			#Web Panel Name
@@ -361,9 +362,8 @@ case $option in
 			sed -i "s|SECRET_KEY = '???'|SECRET_KEY = '$secretkey'|g" $file
 			sed -i "s|WEBPANEL_NAME = 'Get5'|WEBPANEL_NAME = '$wpanelname'|g" $file
 			sed -i "s|DATABASE_KEY = '???'|DATABASE_KEY = '$dbkey'|g" $file
-			sed -i "s|ADMIN_IDS = \[.*\]|ADMIN_IDS = ['$adminsteamid']|g" $file
-			echo "['$adminsteamid']" | sed -i "s:,:\',\':g" $file
-			
+			sed -i "s|SUPER_ADMIN_IDS = \[.*\]|SUPER_ADMIN_IDS = ['$superadmins']|g; 66 s|,|\',\'|g" $file
+
 			echo "File is created under /var/www/get5-web/instance/prod_config.py Please open the file after installation and edit Map Pools and Add User IDs"
 
 			#Database Creation 
