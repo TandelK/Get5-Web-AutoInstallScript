@@ -1,10 +1,8 @@
 # Get5-AutoInstallScript
 
-Are you having hard time installing Get5-Web Panel ? Well here is a quick Auto Install Scirpt created by me for installing https://github.com/PhlexPlexico/get5-web version. The reason why i selected Phlex version is due to advance updates and more options added by him. 
+Are you having hard time installing Get5-Web Panel ? Well here is a quick Auto Install Script created by me for installing https://github.com/PhlexPlexico/get5-web version. The reason why i selected Phlex version is due to advance updates and more options added by him. 
 
-For Installing just simply copy the below code and paste it in Terminal of Ubuntu System.
-Change the file permission of executing on the system.
-And run it as .sh script
+For Installing just simply copy the below code and paste it in Terminal of Ubuntu System. Currently i have only support for Ubuntu System most trusted 16.04 LTS Version. For any other Distro you are free to modify the Script as per requirement and can also send Pull Request to this Repo. 
 
 `wget https://raw.githubusercontent.com/TandelK/Get5-AutoInstallScript/master/get5_auto_installer.sh && chmod +x get5_auto_installer.sh`
 
@@ -13,6 +11,7 @@ And run it as .sh script
 The reason why wget Bash script does not work is due to selection base in start
 
 ## This Auto Install Script Includes 
+
 1) Install : Selection of Master Branch which is stable as well as Development branch is available 
 
 2) Update : Auto Update the Panel and it will automatically run the Upgrade Commands like Requirements or Migrations upgrade after Updates. 
@@ -34,3 +33,5 @@ Sometime after update of development branch i would recommend you to manually ch
 1) Splewis - For the original Get5 Plugin - https://github.com/splewis/get5
 2) PhlexPlexico - For his wonderful modification to Get5-Web version will all new functions - https://github.com/PhlexPlexico/get5-web
 3) xe1os - For testing and helping out fix problems
+
+If anyone wants to share some love please sponsors to two major developers here Splewis and PhlexPlexico for their time given to this projects. 
