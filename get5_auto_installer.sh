@@ -158,7 +158,7 @@ fi
 						read crtpath
 						echo "You have entered $crtpath"
 					done
-					echo "Please provide your SSL Prviate Key Path"
+					echo "Please provide your SSL Private Key Path"
 					##SSL Key
 					read crtkey
 					while [[ ! -f "$crtkey"  || ${crtkey##*.} != 'key' ]];
