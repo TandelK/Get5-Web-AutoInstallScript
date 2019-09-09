@@ -350,7 +350,11 @@ case $option in
 				read -p "Steam API Key :" steamapi
 			done
 			echo "Your Steam API Key is $steamapi"
-
+			
+			echo ""
+			echo ""
+			echo ""
+			
 			#Random Secret Key for Flask Cookies
 			echo "Enter Random Secret Key for Flask Cookies"
 			read -p "Random Secret Key :" secretkey
@@ -359,9 +363,11 @@ case $option in
 				echo "You did not enter anything. Please re-enter Secret Key"
 				read -p "Random Secret Key :" secretkey
 			done
+			
 			echo ""
 			echo ""
 			echo ""
+			
 			#Super Admin Steam ID 64
 			echo -e "\e[31m Warning !! Only added Trusted Steam Admins ID as they have access to everything on the Panel \e[39m"
 			echo ""
@@ -372,6 +378,10 @@ case $option in
 				echo "You did not enter anything. Please re-enter Super Admin Steam ID 64 Key"
 				read -p "Steam ID 64 of Super Admins :" superadminsteamid
 			done
+			
+			echo ""
+			echo ""
+			echo ""
 			
 			#Normal Admin's Steam ID 64
 			echo "Want to add Normal Admin's Steam ID"
@@ -392,6 +402,10 @@ case $option in
 			done
 			fi
 			
+			echo ""
+			echo ""
+			echo ""
+			
 			#Super Admin and Admin only Panel access
 			echo "By Default anyone can login into panel and create matches,server and teams. Do you want panel to be exclusive for your Admins?"
 			echo "Only Admins can access webpanel ? (True or False) . No other Steam IDs will be allowed to login inside the Panel"
@@ -402,6 +416,10 @@ case $option in
 				echo "Please enter only True or False"
 				read adminonlypanel
 			done
+			
+			echo ""
+			echo ""
+			echo ""
 			
 			#Whitelisted Steam ID 64
 			if [ $adminonlypanel == "False" ]
@@ -427,7 +445,33 @@ case $option in
 					echo "The Panel will be open to the Public for Creating Servers/Matches/Teams. Also they can use any Public Servers and Teams created by Super Admins and Admins"
 				fi
 			fi
-
+			echo ""
+			echo ""
+			echo ""
+			#Spectators Steam IDs
+			echo "By Default anyone on the Game Server will not be allowed in the matches, Everytime Admins have to add Spectators which are like in Game Admins as well as Casters . This function will auto add them to all Servers"
+			echo "Want to add Spectators Spectators Steam ID ?"
+			read -p "True or False: " spectatoroption
+			while [[ $spectatoroption != @("True"|"False") ]]
+				do
+				echo "Please enter only True or False"
+				read -p "True or False :" spectatoroption
+			done
+			if [ $spectatoroption == "True" ]
+			then
+			echo "Spectator's Steam ID 64 (Please ensure values are separated by a comma. eg.id1,id2)"
+			read -p "Steam ID 64 of Spectators :" spectatorids
+			while [[ $spectatorids == "" ]];
+				do
+				echo "You did not enter anything. Please re-enter Spectators Steam ID 64 Key"
+				read -p "Steam ID 64 of Spectators :" spectatorids
+			done
+			fi
+			
+			echo ""
+			echo ""
+			echo ""
+			
 			#Web Panel Name
 			echo "Enter Title Name for Web Panel"
 			read -p "Webpanel Title :" wpanelname
@@ -436,6 +480,10 @@ case $option in
 				echo "You did not enter anything. Please enter the name for Web Panel Title"
 				read -p "Webpanel Title :" wpanelname
 			done
+			
+			echo ""
+			echo ""
+			echo ""
 			
 			#Admin Access all Matches
 			echo "Can Super Admin Access all the Matches ? Use True or False (Case Sensitive)"
@@ -447,6 +495,10 @@ case $option in
 			done
 			echo "You have entered $superadminaccess for Admin Can Access all the Matches"
 
+			echo ""
+			echo ""
+			echo ""
+			
 			#Create Match Title Text
 			echo "Do you want to create Match Title Text Use True or False (Case Sensitive)"
 			read -p "True or False :" matchttext 
@@ -456,6 +508,9 @@ case $option in
 				read -p "True or False :" matchttext
 			done
 			
+			echo ""
+			echo ""
+			echo ""
 			
 			#Database Key for Encryption of User Password as well as RCON Passwords of servers.
 			dbkey="$(openssl rand -base64 12)"
@@ -501,9 +556,22 @@ case $option in
 				fi
 			fi
 			
+			if [ $spectatoroption == "True" ]
+			then
+				sed -i "54 s|SPECTATOR_IDS = \[.*\]|SPECTATOR_IDS = ['$spectatorids']|g" $file
+				echo "['$spectatorids']" | sed -i "62 s:,:\',\':g" $file
+			fi
+			
+			echo ""
+			echo ""
+			echo ""
 			
 			echo "File is created under /var/www/get5-web/instance/prod_config.py Please open the file after installation and edit Map Pools and Add User IDs"
-
+			
+			echo ""
+			echo ""
+			echo ""
+			
 			#Database Creation 
 			echo "Creating Database Structure."
 			cd /var/www/get5-web/
@@ -515,17 +583,39 @@ case $option in
 			cd /var/www/get5-web/
 			chown -R www-data:www-data logs
 			chown -R www-data:www-data get5/static/resource/csgo
-
+			
+			echo ""
+			echo ""
+			echo ""
 			#WSGI File
 			echo "Creating Get5.wsgi"
 			wsgi_create
+			
+			echo ""
+			echo ""
+			echo ""
 			
 			#Apache Config Creation
 			echo "Creating Apache Config"
 			apacheconfig
 
+			echo ""
+			echo ""
+			echo ""
+			
 			echo "Changing Directory back to /var/www/get5-web"
 			cd /var/www/get5-web
+			
+			echo ""
+			echo ""
+			echo ""
+			
+			echo "Changing Directory to /var/www/get5-web/instance. Here you can modify the Map List under prod_config.py file. Please look at the formatting properly."
+			cd /var/www/get5-web/instance
+			
+			echo ""
+			echo ""
+			echo ""
 			
 			echo "If you want to Note down some important information if you want to modify anything in future . "
 			echo "Database User of get5@localhost is $get5dbpass"
