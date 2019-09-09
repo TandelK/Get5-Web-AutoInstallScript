@@ -215,6 +215,9 @@ select option in Install Update 'Create WSGI' 'Create Apache Config' exit
 do
 case $option in
 	Install)
+			#Setting locales
+			export LC_ALL=C
+
 		if [ -d "/var/www/get5-web" ] 
 		then
 			echo "Installation already done and exist inside /var/www/get5-web ."
