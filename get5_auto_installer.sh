@@ -4,11 +4,9 @@
 # Credits : Splewis , PhlexPlexico 
 # Purpose: Get5 Web API Panel installation script
 # Website : 
-version="0.90"
+version="0.95"
 
-# Fix for Bash Script via Wget getting skipped in starting
-read -n1 -r -p "Press any key to continue..."
-
+# Checking for Root
 if [[ $EUID -ne 0 ]]; then
    echo -e "\e[32m This script must be run as root as it require packages to be downloaded \e[39m" 
    exit 1
@@ -54,160 +52,160 @@ fi
 	}
 	
 #Apache Config
-		function apacheconfig() 
-		{
-			cd /etc/apache2/sites-enabled/
-			echo "Please Enter Panel Address without http or https protocol"
-			read sitename
+	function apacheconfig() 
+	{
+		cd /etc/apache2/sites-enabled/
+		echo "Please Enter Panel Address without http or https protocol"
+		read sitename
+		echo "You have entered $sitename"
+		while [[ $sitename == *"http"* || $sitename == *"https"* ]];
+		do
+			echo "Please re-enter Website Address without http or https"
+			read -r sitename
 			echo "You have entered $sitename"
-			while [[ $sitename == *"http"* || $sitename == *"https"* ]];
-				do
-					echo "Please re-enter Website Address without http or https"
-					read -r sitename
-					echo "You have entered $sitename"
-				done
-			echo "Enter Admin Email address: "; 
-			read adminemail
+		done
+		echo "Enter Admin Email address: "; 
+		read adminemail
 			
-			if [ -f "/etc/apache2/sites-enabled/$sitename.conf" ]
-				then
-				echo "Sitename Apache Config already exist in sites-enabled"
-				echo "Do you want to delete existing $sitename.conf file"
-				read -p "Enter Yes or No" sitefile
-				while [[ "$sitefile" != @("Yes"|"No") ]]
-					do
-					echo "You did not select Yes or No."
-					read -p "Yes or No" sitefile
-					done
-				if [ $sitefile == "Yes" ]
-				then
-					rm -r /etc/apache2/sites-enabled/$sitename.conf
-				else
-					echo "Please delete the old file or update the file as per your requirement from Official Guides"
-					echo "File Location is /etc/apache2/sites-enabled/$sitename.conf"
-					exit 1
-				fi
-			else
-				echo "Creating Apache Site Configuration File"
-			fi 
-				
-				## Port 80 HTTP Site Configuration 
-				echo "Creating Apache Site config file under /etc/apache2/sites-enabled/$sitename.conf"
-				echo "<VirtualHost *:80>" >>$sitename.conf
-				echo "	ServerName $sitename" >>$sitename.conf
-				echo "	ServerAdmin $adminemail" >>$sitename.conf
-				echo "	WSGIScriptAlias / /var/www/get5-web/get5.wsgi" >>$sitename.conf
-				echo "" >>$sitename.conf
-				echo "	<Directory /var/www/get5>" >>$sitename.conf
-				echo "		Order deny,allow" >>$sitename.conf
-				echo "		Allow from all" >>$sitename.conf
-				echo "	</Directory>" >>$sitename.conf
-				echo "">>$sitename.conf
-				echo "	Alias /static /var/www/get5-web/get5/static" >>$sitename.conf
-				echo "	<Directory /var/www/get5-web/get5/static>" >>$sitename.conf
-				echo "		Order allow,deny" >>$sitename.conf
-				echo "		Allow from all" >>$sitename.conf
-				echo "	</Directory>" >>$sitename.conf
-				echo "" >>$sitename.conf
-				echo "	ErrorLog \${APACHE_LOG_DIR}/error.log" >>$sitename.conf
-				echo "	LogLevel warn" >>$sitename.conf
-				echo "	CustomLog \${APACHE_LOG_DIR}/access.log combined" >>$sitename.conf
-				echo "</VirtualHost>" >>$sitename.conf
-
-				##SSL Support
-				echo "Do you want to use SSL (Yes or No)"
-				read ssloption
-				while [[ "$ssloption" != @("Yes"|"No") ]]
+		if [ -f "/etc/apache2/sites-enabled/$sitename.conf" ]
+		then
+			echo "Sitename Apache Config already exist in sites-enabled"
+			echo "Do you want to delete existing $sitename.conf file"
+			read -p "Enter Yes or No" sitefile
+			while [[ "$sitefile" != @("Yes"|"No") ]]
 				do
-					echo "You did not select Yes or No."
-					read ssloption
-				done
+				echo "You did not select Yes or No."
+				read -p "Yes or No" sitefile
+			done
+			if [ $sitefile == "Yes" ]
+			then
+				rm -r /etc/apache2/sites-enabled/$sitename.conf
+			else
+				echo "Please delete the old file or update the file as per your requirement from Official Guides"
+				echo "File Location is /etc/apache2/sites-enabled/$sitename.conf"
+				exit 1
+			fi
+			else
+			echo "Creating Apache Site Configuration File"
+			fi 
+		
+			## Port 80 HTTP Site Configuration 
+			echo "Creating Apache Site config file under /etc/apache2/sites-enabled/$sitename.conf"
+			echo "<VirtualHost *:80>" >>$sitename.conf
+			echo "	ServerName $sitename" >>$sitename.conf
+			echo "	ServerAdmin $adminemail" >>$sitename.conf
+			echo "	WSGIScriptAlias / /var/www/get5-web/get5.wsgi" >>$sitename.conf
+			echo "" >>$sitename.conf
+			echo "	<Directory /var/www/get5>" >>$sitename.conf
+			echo "		Order deny,allow" >>$sitename.conf
+			echo "		Allow from all" >>$sitename.conf
+			echo "	</Directory>" >>$sitename.conf
+			echo "">>$sitename.conf
+			echo "	Alias /static /var/www/get5-web/get5/static" >>$sitename.conf
+			echo "	<Directory /var/www/get5-web/get5/static>" >>$sitename.conf
+			echo "		Order allow,deny" >>$sitename.conf
+			echo "		Allow from all" >>$sitename.conf
+			echo "	</Directory>" >>$sitename.conf
+			echo "" >>$sitename.conf
+			echo "	ErrorLog \${APACHE_LOG_DIR}/error.log" >>$sitename.conf
+			echo "	LogLevel warn" >>$sitename.conf
+			echo "	CustomLog \${APACHE_LOG_DIR}/access.log combined" >>$sitename.conf
+			echo "</VirtualHost>" >>$sitename.conf
+
+			##SSL Support
+			echo "Do you want to use SSL (Yes or No)"
+			read ssloption
+			while [[ "$ssloption" != @("Yes"|"No") ]]
+			do
+				echo "You did not select Yes or No."
+				read ssloption
+			done
 				
-				if [ $ssloption == "Yes" ]
+			if [ $ssloption == "Yes" ]
+			then
+				if [ -f "/etc/apache2/sites-enabled/$sitename-ssl.conf" ]
 				then
-					if [ -f "/etc/apache2/sites-enabled/$sitename-ssl.conf" ]
+					echo "Sitename Apache Config already exist in sites-enabled"
+					echo "Do you want to delete existing $sitename-ssl.conf file"
+					read -p "Enter Yes or No" sslfileconf
+	
+					while [[ "$sslfileconf" != @("Yes"|"No") ]]
+					do
+						echo "You did not select Yes or No."
+						read sslfileconf
+					done
+					if [ $sslfileconf == "Yes" ]
 					then
-						echo "Sitename Apache Config already exist in sites-enabled"
-							echo "Do you want to delete existing $sitename-ssl.conf file"
-							read -p "Enter Yes or No" sslfileconf
-							
-							while [[ "$sslfileconf" != @("Yes"|"No") ]]
-								do
-								echo "You did not select Yes or No."
-								read sslfileconf
-							done
-							if [ $sslfileconf == "Yes" ]
-								then
-									rm -r /etc/apache2/sites-enabled/$sitename-ssl.conf
-								else
-									echo "Please delete the old file or update the file as per your requirement from Official Guides"
-									echo "File Location is /etc/apache2/sites-enabled/$sitename-ssl.conf"
-									exit 1
-							fi
+						rm -r /etc/apache2/sites-enabled/$sitename-ssl.conf
+					else
+						echo "Please delete the old file or update the file as per your requirement from Official Guides"
+						echo "File Location is /etc/apache2/sites-enabled/$sitename-ssl.conf"
+						exit 1
 					fi
+				fi
 					
-					echo "Enabling SSL Support"
-					a2enmod ssl
-					##SSL Certificate
-					echo "Please provide your SSL Certificate Path"
+				echo "Enabling SSL Support"
+				a2enmod ssl
+				##SSL Certificate
+				echo "Please provide your SSL Certificate Path"
+				read crtpath
+				echo "You have entered $crtpath"
+				while [[ ! -f "$crtpath" || ${crtpath##*.} != 'crt' ]];
+				do 
+					echo "Please check if the file exists and it also contains .crt extension"
 					read crtpath
 					echo "You have entered $crtpath"
-					while [[ ! -f "$crtpath" || ${crtpath##*.} != 'crt' ]];
-					do 
-						echo "Please check if the file exists and it also contains .crt extension"
-						read crtpath
-						echo "You have entered $crtpath"
-					done
-					echo "Please provide your SSL Private Key Path"
-					##SSL Key
+				done
+				echo "Please provide your SSL Private Key Path"
+				##SSL Key
+				read crtkey
+				while [[ ! -f "$crtkey"  || ${crtkey##*.} != 'key' ]];
+				do 
+					echo "Please check the file exists and it also contains .key extension"
 					read crtkey
-					while [[ ! -f "$crtkey"  || ${crtkey##*.} != 'key' ]];
-					do 
-						echo "Please check the file exists and it also contains .key extension"
-						read crtkey
-						echo "You have entered $crtkey"
-					done
+					echo "You have entered $crtkey"
+				done
 					
-					##Apache Site Config for Port 443
-					echo "<IfModule mod_ssl.c>">>$sitename-ssl.conf
-					echo "<VirtualHost *:443>" >>$sitename-ssl.conf
-					echo "	ServerName $sitename" >>$sitename-ssl.conf
-					echo "	ServerAdmin $adminemail" >>$sitename-ssl.conf
-					echo "	WSGIScriptAlias / /var/www/get5-web/get5.wsgi" >>$sitename-ssl.conf
-					echo "" >>$sitename-ssl.conf
-					echo "	<Directory /var/www/get5>" >>$sitename-ssl.conf
-					echo "		Order deny,allow" >>$sitename-ssl.conf
-					echo "		Allow from all" >>$sitename-ssl.conf
-					echo "	</Directory>" >>$sitename-ssl.conf
-					echo "">>$sitename-ssl.conf
-					echo "	Alias /static /var/www/get5-web/get5/static" >>$sitename-ssl.conf
-					echo "	<Directory /var/www/get5-web/get5/static>" >>$sitename-ssl.conf
-					echo "		Order allow,deny" >>$sitename-ssl.conf
-					echo "		Allow from all" >>$sitename-ssl.conf
-					echo "	</Directory>" >>$sitename-ssl.conf
-					echo "" >>$sitename-ssl.conf
-					echo "	ErrorLog \${APACHE_LOG_DIR}/error.log" >>$sitename-ssl.conf
-					echo "	LogLevel warn" >>$sitename-ssl.conf
-					echo "	CustomLog \${APACHE_LOG_DIR}/access.log combined" >>$sitename-ssl.conf
-					echo "">>$sitename-ssl.conf
-					echo "	SSLEngine on">>$sitename-ssl.conf
-					echo "	SSLCertificateFile $crtpath">>$sitename-ssl.conf
-					echo "	SSLCertificateKeyFile $crtkey">>$sitename-ssl.conf
-					echo "">>$sitename-ssl.conf
-					echo '	<FilesMatch "\.(cgi|shtml|phtml|php)$">'>>$sitename-ssl.conf
-					echo "	SSLOptions +StdEnvVars">>$sitename-ssl.conf
-					echo "	</FilesMatch>">>$sitename-ssl.conf
-					echo "	<Directory /usr/lib/cgi-bin>">>$sitename-ssl.conf
-					echo "	SSLOptions +StdEnvVars">>$sitename-ssl.conf
-					echo "	</Directory>">>$sitename-ssl.conf
-					echo "	</VirtualHost>" >>$sitename-ssl.conf
-					echo "	</IfModule>">>$sitename-ssl.conf
-				else
-					echo "SSL Support not activated"
-				fi
-				echo "Restarting Apache2 Service"
-				service apache2 restart
-		}
+				##Apache Site Config for Port 443
+				echo "<IfModule mod_ssl.c>">>$sitename-ssl.conf
+				echo "<VirtualHost *:443>" >>$sitename-ssl.conf
+				echo "	ServerName $sitename" >>$sitename-ssl.conf
+				echo "	ServerAdmin $adminemail" >>$sitename-ssl.conf
+				echo "	WSGIScriptAlias / /var/www/get5-web/get5.wsgi" >>$sitename-ssl.conf
+				echo "" >>$sitename-ssl.conf
+				echo "	<Directory /var/www/get5>" >>$sitename-ssl.conf
+				echo "		Order deny,allow" >>$sitename-ssl.conf
+				echo "		Allow from all" >>$sitename-ssl.conf
+				echo "	</Directory>" >>$sitename-ssl.conf
+				echo "">>$sitename-ssl.conf
+				echo "	Alias /static /var/www/get5-web/get5/static" >>$sitename-ssl.conf
+				echo "	<Directory /var/www/get5-web/get5/static>" >>$sitename-ssl.conf
+				echo "		Order allow,deny" >>$sitename-ssl.conf
+				echo "		Allow from all" >>$sitename-ssl.conf
+				echo "	</Directory>" >>$sitename-ssl.conf
+				echo "" >>$sitename-ssl.conf
+				echo "	ErrorLog \${APACHE_LOG_DIR}/error.log" >>$sitename-ssl.conf
+				echo "	LogLevel warn" >>$sitename-ssl.conf
+				echo "	CustomLog \${APACHE_LOG_DIR}/access.log combined" >>$sitename-ssl.conf
+				echo "">>$sitename-ssl.conf
+				echo "	SSLEngine on">>$sitename-ssl.conf
+				echo "	SSLCertificateFile $crtpath">>$sitename-ssl.conf
+				echo "	SSLCertificateKeyFile $crtkey">>$sitename-ssl.conf
+				echo "">>$sitename-ssl.conf
+				echo '	<FilesMatch "\.(cgi|shtml|phtml|php)$">'>>$sitename-ssl.conf
+				echo "	SSLOptions +StdEnvVars">>$sitename-ssl.conf
+				echo "	</FilesMatch>">>$sitename-ssl.conf
+				echo "	<Directory /usr/lib/cgi-bin>">>$sitename-ssl.conf
+				echo "	SSLOptions +StdEnvVars">>$sitename-ssl.conf
+				echo "	</Directory>">>$sitename-ssl.conf
+				echo "	</VirtualHost>" >>$sitename-ssl.conf
+				echo "	</IfModule>">>$sitename-ssl.conf
+			else
+				echo "SSL Support not activated"
+			fi
+			echo "Restarting Apache2 Service"
+			service apache2 restart
+	}
 
 ##Web Installation
 echo -e "\e[32m  Welcome to Get5 Web Panel Auto Installation script \e[39m"
@@ -221,10 +219,20 @@ case $option in
 		then
 			echo "Installation already done and exist inside /var/www/get5-web ."
 		else
-		
 			echo -e "\e[32m Downloading Dependencies \e[39m"
-			
-			sudo apt-get update && apt-get upgrade -y
+				
+			echo "Do you want to use Apt update and Upgrade Commands ?" 
+			echo "If you are using specific branch / versions for other projects on the panel i would not recommend below option"
+			read -p "Apt-get Update and Upgrade. ( Yes or No) :" aptupdateissue
+			while [[ $aptupdateissue != @("Yes"|"No") ]]
+				do
+				echo "Please enter only Yes or No"
+				read -p "Yes or No :" aptupdateissue
+			done
+			if [ $aptupdateissue == "Yes" ]
+			then
+				sudo apt-get update && apt-get upgrade -y
+			fi
 			
 			sudo apt-get install build-essential software-properties-common -y
 	
@@ -234,24 +242,28 @@ case $option in
 
 			#Checking Git Package available or not
 
-			echo -e "\e[32mChecking Git Command Status \e[39m"
+			echo -e "\e[32m Checking Git Command Status \e[39m"
 
 			gitavailable='git'
 			if ! dpkg -s $gitavailable >/dev/null 2>&1; then
-				echo -e"\e[32mInstalling Git"
+				echo -e"\e[32m Installing Git"
 				sudo apt-get install $gitavailable 
 				else echo -e "\e[32m Git Already Installed \e[39m"
 			fi
+			echo ""
 			#Checking MySQL Server installed or not
 
-			echo -e "\e[32mChecking MySQL Server Status \e[39m"
-
+			echo -e "\e[32m Checking MySQL Server Status \e[39m"
+			echo ""
 			sqlavailable='mysql-server'
 			if ! dpkg -s $sqlavailable >/dev/null 2>&1; then
-				echo -e"\e[32mInstalling MySQL Server"
+				echo -e"\e[32m Installing MySQL Server"
 				sudo apt-get install $sqlavailable 
 				service mysql start
-				else echo -e "\e[32m MySQL Server already Installed \e[39m"
+				echo ""
+				else 
+				echo -e "\e[32m MySQL Server already Installed \e[39m"
+				echo ""
 			fi
 			echo "Restarting MySQL Service"
 			#This is due to any systems have any kind of MySQL Errors can be restarted with this.
@@ -262,46 +274,32 @@ case $option in
 			
 			get5dbpass="$(openssl rand -base64 12)"
 			echo "Just for safety if you want to save it Get5 User Password is $get5dbpass"
+			echo "Please enter root user MySQL password!"
+			read -p "YOUR SQL ROOT PASSWORD: " -s rootpasswd
+			until mysql -u root -p$rootpasswd  -e ";" ; do
+				read -p "Can't connect, please retry Root Password: " -s rootpasswd
+			done
 			
-			# If /root/.my.cnf exist it will auto create database as it already has MySQL Root Password
+			echo "Creating Database Get5 with Collate utf8mb4_general_ci"
+			mysql -u root -p$rootpasswd -e "CREATE DATABASE get5 CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
 			
-			if [ -f /root/.my.cnf ];
-			then
+			echo "Creating Get5 User with Random Password"
+			mysql -u root -p$rootpasswd -e "CREATE USER get5@localhost IDENTIFIED BY '$get5dbpass';"
 			
-				echo "Creating Database Get5 with Collate utf8mb4_general_ci"
-				mysql -e "CREATE DATABASE get5 CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
-				
-				echo "Creating Get5 User with Random Password"
-				mysql -e "CREATE USER get5@localhost IDENTIFIED BY '$get5dbpass';"
-				
-				echo "Grant Privileges to Get5 User to Get5 Database"
-				mysql -e "GRANT ALL PRIVILEGES ON get5.* TO 'get5'@'localhost' WITH GRANT OPTION;"
-				
-				mysql -e "FLUSH PRIVILEGES;"
-				
-			# If /root/.my.cnf doesn't exist then it'll ask for root password   
-			else
-				echo "Please enter root user MySQL password!"
-					read -p "YOUR SQL ROOT PASSWORD: " -s rootpasswd
-					until mysql -u root -p$rootpasswd  -e ";" ; do
-					read -p "Can't connect, please retry: " -s rootpasswd
-				done
-				
-				echo "Creating Database Get5 with Collate utf8mb4_general_ci"
-				mysql -u root -p$rootpasswd -e "CREATE DATABASE get5 CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
-				
-				echo "Creating Get5 User with Random Password"
-				mysql -u root -p$rootpasswd -e "CREATE USER get5@localhost IDENTIFIED BY '$get5dbpass';"
-				
-				echo "Grant Privileges to Get5 User to Get5 Database"
-				mysql -u root -p$rootpasswd -e "GRANT ALL PRIVILEGES ON get5.* TO 'get5'@'localhost' WITH GRANT OPTION;"
-				
-				mysql -u root -p$rootpasswd -e "FLUSH PRIVILEGES;"
-			fi
-			echo -e "\e[32mDownloading Get5 Web Panel \e[39m"
+			echo "Grant Privileges to Get5 User to Get5 Database"
+			mysql -u root -p$rootpasswd -e "GRANT ALL PRIVILEGES ON get5.* TO 'get5'@'localhost' WITH GRANT OPTION;"
+			
+			echo "Flushing Privilges"
+			mysql -u root -p$rootpasswd -e "FLUSH PRIVILEGES;"
+			
+			
+			echo "" 
+			echo ""
+			echo ""
+			echo -e "\e[32m Downloading Get5 Web Panel \e[39m"
 
 			cd /var/www/
-				# Branch Selection
+			# Branch Selection
 			echo -e "\e[34m Github Branch Selection \e[39m"
 			PS3="Select the branch to clone >"
 			select branch in master development
@@ -320,11 +318,11 @@ case $option in
 					break;
 				;;
 				*) 
-					echo -e "\e[31mYou didnt select correct Option, Please use selection from above \e[39m"
+					echo -e "\e[31m You didnt select correct Option, Please use selection from above \e[39m"
 				;;
 				esac
 			done	
-			echo -e "\e[34mDownloaded in /var/www/get5-web \e[39m"
+			echo -e "\e[34m Downloaded in /var/www/get5-web \e[39m"
 	
 			cd /var/www/get5-web
 			echo "Start Creating Virtual Environment and Download Requirements"
@@ -335,68 +333,6 @@ case $option in
 			
 
 			#Prod Config File Creation and settings
-			cd /var/www/get5-web/instance
-		        
-				#Steam API Key
-				echo "Enter your Steam API Key"
-				read steamapi
-				while [[ $steamapi == "" ]];
-				do
-					echo "You did not enter anything. Please re-enter Steam API Key"
-					read steamapi
-				done
-			echo "Your Steam API Key is $steamapi"
-
-			#Random Secret Key for Flask Cookies
-			echo "Enter Random Secret Key for Flask Cookies"
-			read secretkey
-			while [[ $secretkey == "" ]];
-				do
-				echo "You did not enter anything. Please re-enter Secret Key"
-				read secretkey
-			done
-			
-			#Main Admin Steam ID 64
-			echo "Admin's Steam ID 64 (Please ensure values are separated by a comma.)"
-			read adminsteamid
-			while [[ $adminsteamid == "" ]];
-				do
-				echo "You did not enter anything. Please re-enter Admin Steam ID 64 Key"
-				read adminsteamid
-			done
-
-			#Web Panel Name
-			echo "Enter Name for Web Panel"
-			read wpanelname
-			while [[ $wpanelname == "" ]];
-				do
-				echo "You did not enter anything. Please enter the name for Web Panel"
-				read wpanelname
-			done
-			
-			#Admin Access all Matches
-			echo "Can Admin Access all the Matches ? Use True or False (Case Sensitive)"
-			read adminaccess
-			while [[ "$adminaccess" != @("True"|"False") ]]
-				do
-				echo "Please enter only True or False"
-				read adminaccess
-			done
-			echo "You have entered $adminaccess for Admin Can Access all the Matches"
-
-			#Create Match Title Text
-			echo "Do you want to create Match Title Text Use True or False (Case Sensitive)"
-			read matchttext 
-			while [[ "$matchttext" != @("True"|"False") ]]
-				do
-				echo "Please enter only True or False"
-				read matchttext
-			done
-			
-			#Database Key for Encryption of User Password as well as RCON Passwords of servers.
-			dbkey="$(openssl rand -base64 12)"
-			echo "Your DB Key is $dbkey. This will encrypt user passwords in database."
-			
 			#Copy & Modify Prod Config file
 			echo "Creating Prod Config File"
 			cd /var/www/get5-web/instance
@@ -404,16 +340,167 @@ case $option in
 			cp prod_config.py.default prod_config.py
 			
 			file="prod_config.py"
+		        
+			#Steam API Key
+			echo "Enter your Steam API Key (https://steamcommunity.com/dev/apikey)"
+			read -p "Steam API Key :" steamapi
+			while [[ $steamapi == "" ]];
+			do
+				echo "You did not enter anything. Please re-enter Steam API Key"
+				read -p "Steam API Key :" steamapi
+			done
+			echo "Your Steam API Key is $steamapi"
+
+			#Random Secret Key for Flask Cookies
+			echo "Enter Random Secret Key for Flask Cookies"
+			read -p "Random Secret Key :" secretkey
+			while [[ $secretkey == "" ]];
+				do
+				echo "You did not enter anything. Please re-enter Secret Key"
+				read -p "Random Secret Key :" secretkey
+			done
+			echo ""
+			echo ""
+			echo ""
+			#Super Admin Steam ID 64
+			echo -e "\e[31m Warning !! Only added Trusted Steam Admins ID as they have access to everything on the Panel \e[39m"
+			echo ""
+			echo "Super Admin's Steam ID 64 (Please ensure values are separated by a comma. eg.id1,id2)"
+			read -p "Steam ID 64 of Super Admins :" superadminsteamid
+			while [[ $superadminsteamid == "" ]];
+				do
+				echo "You did not enter anything. Please re-enter Super Admin Steam ID 64 Key"
+				read -p "Steam ID 64 of Super Admins :" superadminsteamid
+			done
+			
+			#Normal Admin's Steam ID 64
+			echo "Want to add Normal Admin's Steam ID"
+			read -p "True or False: " normaladmin
+			while [[ $normaladmin != @("True"|"False") ]]
+				do
+				echo "Please enter only True or False"
+				read -p "True or False :" normaladmin
+			done
+			if [ $normaladmin == "True" ]
+			then
+			echo "Admin's Steam ID 64 (Please ensure values are separated by a comma. eg.id1,id2)"
+			read -p "Steam ID 64 of Admins :" adminsteamid
+			while [[ $adminsteamid == "" ]];
+				do
+				echo "You did not enter anything. Please re-enter Admin Steam ID 64 Key"
+				read -p "Steam ID 64 of Admins :" adminsteamid
+			done
+			fi
+			
+			#Super Admin and Admin only Panel access
+			echo "By Default anyone can login into panel and create matches,server and teams. Do you want panel to be exclusive for your Admins?"
+			echo "Only Admins can access webpanel ? (True or False) . No other Steam IDs will be allowed to login inside the Panel"
+			echo "Alert!! If you want to add Whitelisted Steam IDs please use False!!"
+			read -p "True or False :" adminonlypanel
+			while [[ "$adminonlypanel" != @("True"|"False") ]]
+				do
+				echo "Please enter only True or False"
+				read adminonlypanel
+			done
+			
+			#Whitelisted Steam ID 64
+			if [ $adminonlypanel == "False" ]
+			then
+				echo "By Default the panel is open to public to create their own Servers/Teams and Matches. If you want panel should have exclusive access please configure it here properly."
+				echo "Want to add Whitelisted Steam ID ?"
+				read -p "True or False :" whitelistoption
+				while [[ $whitelistoption != @("True"|"False") ]]
+					do
+					echo "Please enter only True or False"
+					read -p "True or False :" whitelistoption
+				done
+				if [ $whitelistoption == "True" ]
+				then
+					echo "Whitelist's Steam ID 64 (Please ensure values are separated by a comma. eg.id1,id2)"
+					read -p "Steam ID 64 of Whitelist :" whitelistids
+					while [[ $whitelistids == "" ]];
+					do
+						echo "You did not enter anything. Please re-enter Whitelist Steam ID 64 Key"
+						read -p "Steam ID 64 of Whitelist :" whitelistids
+					done
+				else
+					echo "The Panel will be open to the Public for Creating Servers/Matches/Teams. Also they can use any Public Servers and Teams created by Super Admins and Admins"
+				fi
+			fi
+
+			#Web Panel Name
+			echo "Enter Title Name for Web Panel"
+			read -p "Webpanel Title :" wpanelname
+			while [[ $wpanelname == "" ]];
+				do
+				echo "You did not enter anything. Please enter the name for Web Panel Title"
+				read -p "Webpanel Title :" wpanelname
+			done
+			
+			#Admin Access all Matches
+			echo "Can Super Admin Access all the Matches ? Use True or False (Case Sensitive)"
+			read -p "True or False :" superadminaccess
+			while [[ $superadminaccess != @("True"|"False") ]]
+				do
+				echo "Please enter only True or False"
+				read -p "True or False :" superadminaccess
+			done
+			echo "You have entered $superadminaccess for Admin Can Access all the Matches"
+
+			#Create Match Title Text
+			echo "Do you want to create Match Title Text Use True or False (Case Sensitive)"
+			read -p "True or False :" matchttext 
+			while [[ $matchttext != @("True"|"False") ]]
+				do
+				echo "Please enter only True or False"
+				read -p "True or False :" matchttext
+			done
+			
+			
+			#Database Key for Encryption of User Password as well as RCON Passwords of servers.
+			dbkey="$(openssl rand -base64 12)"
+			echo "Your DB Key is $dbkey. This will encrypt user passwords in database."
 			
 			sed -i "s|mysql://user:password@host/db|mysql://get5:$get5dbpass@localhost/get5|g" $file
 			sed -i "s|STEAM_API_KEY = '???'|STEAM_API_KEY = '$steamapi'|g" $file
 			sed -i "s|SECRET_KEY = '???'|SECRET_KEY = '$secretkey'|g" $file
 			sed -i "s|WEBPANEL_NAME = 'Get5'|WEBPANEL_NAME = '$wpanelname'|g" $file
 			sed -i "s|DATABASE_KEY = '???'|DATABASE_KEY = '$dbkey'|g" $file
-			sed -i "s|ADMINS_ACCESS_ALL_MATCHES = False|ADMINS_ACCESS_ALL_MATCHES = $adminaccess|g" $file
+			sed -i "s|ADMINS_ACCESS_ALL_MATCHES = False|ADMINS_ACCESS_ALL_MATCHES = $superadminaccess|g" $file
 			sed -i "s|CREATE_MATCH_TITLE_TEXT = False|CREATE_MATCH_TITLE_TEXT = $matchttext|g" $file
-			sed -i "62 s|ADMIN_IDS = \[.*\]|ADMIN_IDS = ['$adminsteamid']|g" $file
-			echo "['$adminsteamid']" | sed -i "62 s:,:\',\':g" $file
+			sed -i "66 s|SUPER_ADMIN_IDS = \[.*\]|SUPER_ADMIN_IDS = ['$superadminsteamid']|g" $file
+			echo "['$superadminsteamid']" | sed -i "66 s:,:\',\':g" $file
+			
+			if [ $normaladmin == "True" ]
+			then
+				sed -i "62 s|ADMIN_IDS = \[.*\]|ADMIN_IDS = ['$adminsteamid']|g" $file
+				echo "['$adminsteamid']" | sed -i "62 s:,:\',\':g" $file
+			fi
+			
+			if [ $adminonlypanel == "True" ]
+			then
+				if [ $normaladmin == "True" ]
+				then
+					sed -i "58 s|WHITELISTED_IDS = \[.*\]|WHITELISTED_IDS = ['$superadminsteamid,$adminsteamid']|g" $file
+					echo "['$superadminsteamid','$adminsteamid']" | sed -i "58 s:,:\',\':g" $file
+				else
+					sed -i "58 s|WHITELISTED_IDS = \[.*\]|WHITELISTED_IDS = ['$superadminsteamid']|g" $file
+					echo "['$superadminsteamid']" | sed -i "58 s:,:\',\':g" $file
+				fi
+			else
+				if [ $whitelistoption == "True" ] 
+				then
+					if [ $normaladmin == "True" ]
+					then
+						sed -i "58 s|WHITELISTED_IDS = \[.*\]|WHITELISTED_IDS = ['$superadminsteamid,$adminsteamid,$whitelistids']|g" $file
+						echo "['$superadminsteamid','$adminsteamid','$whitelistids']" | sed -i "58 s:,:\',\':g" $file
+					else
+						sed -i "58 s|WHITELISTED_IDS = \[.*\]|WHITELISTED_IDS = ['$superadminsteamid,$whitelistids']|g" $file
+						echo "['$superadminsteamid','$whitelistids']" | sed -i "58 s:,:\',\':g" $file
+					fi
+				fi
+			fi
+			
 			
 			echo "File is created under /var/www/get5-web/instance/prod_config.py Please open the file after installation and edit Map Pools and Add User IDs"
 
@@ -439,6 +526,12 @@ case $option in
 
 			echo "Changing Directory back to /var/www/get5-web"
 			cd /var/www/get5-web
+			
+			echo "If you want to Note down some important information if you want to modify anything in future . "
+			echo "Database User of get5@localhost is $get5dbpass"
+			echo "Database Encryption Password is $dbkey"
+			echo "File for modifying for Map Pools is located in /var/www/get5-web/instance/prod_config.py"
+			
 			break;
 		fi
 	;;
