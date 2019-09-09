@@ -518,7 +518,7 @@ case $option in
 			cd /var/www/get5-web/
 			chown -R www-data:www-data logs
 			chown -R www-data:www-data get5/static/resource/csgo
-
+			
 			#WSGI File
 			echo "Creating Get5.wsgi"
 			wsgi_create
@@ -527,6 +527,9 @@ case $option in
 			echo "Creating Apache Config"
 			apacheconfig
 
+			#Disabling default apache2 site"
+			sudo a2dissite 000-default.conf
+			
 			echo "Changing Directory back to /var/www/get5-web"
 			cd /var/www/get5-web
 			
