@@ -313,13 +313,13 @@ case $option in
 				case $branch in
 				master)
 					echo -e "\e[34m Downloading Master branch \e[39m"
-					git clone https://github.com/PhlexPlexico/get5-web
+					git clone https://github.com/xe1os/get5-web
 					echo -e "\e[34m Finish Downloading Master Branch \e[39m"
 					break;
 				;;
 				development)
 					echo -e "\e[34m Downloading Development branch \e[39m"
-					git clone -b development --single-branch https://github.com/PhlexPlexico/get5-web 
+					git clone -b development --single-branch https://github.com/xe1os/get5-web 
 					echo -e "\e[34m Finish Downloading Development Branch \e[39m"
 					break;
 				;;
