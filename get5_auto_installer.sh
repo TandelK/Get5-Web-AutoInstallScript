@@ -215,6 +215,9 @@ select option in Install Update 'Create WSGI' 'Create Apache Config' exit
 do
 case $option in
 	Install)
+			#Setting locales
+			export LC_ALL=C
+
 		if [ -d "/var/www/get5-web" ] 
 		then
 			echo "Installation already done and exist inside /var/www/get5-web ."
@@ -584,9 +587,12 @@ case $option in
 			chown -R www-data:www-data logs
 			chown -R www-data:www-data get5/static/resource/csgo
 			
+<<<<<<< HEAD
 			echo ""
 			echo ""
 			echo ""
+=======
+>>>>>>> 73e65936076baade8f41bd7fa2e4ca4a4ecb3992
 			#WSGI File
 			echo "Creating Get5.wsgi"
 			wsgi_create
@@ -599,9 +605,14 @@ case $option in
 			echo "Creating Apache Config"
 			apacheconfig
 
+<<<<<<< HEAD
 			echo ""
 			echo ""
 			echo ""
+=======
+			#Disabling default apache2 site"
+			sudo a2dissite 000-default.conf
+>>>>>>> 73e65936076baade8f41bd7fa2e4ca4a4ecb3992
 			
 			echo "Changing Directory back to /var/www/get5-web"
 			cd /var/www/get5-web
