@@ -71,7 +71,7 @@ fi
 		then
 			echo "Sitename Apache Config already exist in sites-enabled"
 			echo "Do you want to delete existing $sitename.conf file"
-			read -p "Enter Yes or No" sitefile
+			read -p "Enter Yes or No:" sitefile
 			while [[ "$sitefile" != @("Yes"|"No") ]]
 				do
 				echo "You did not select Yes or No."
@@ -216,7 +216,10 @@ do
 case $option in
 	Install)
 			#Setting locales
-			export LC_ALL=C
+			echo "LC_ALL=en_US.UTF-8" >> /etc/environment
+			echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+			echo "LANG=en_US.UTF-8" > /etc/locale.conf
+			locale-gen en_US.UTF-8
 
 		if [ -d "/var/www/get5-web" ] 
 		then
@@ -587,12 +590,10 @@ case $option in
 			chown -R www-data:www-data logs
 			chown -R www-data:www-data get5/static/resource/csgo
 			
-<<<<<<< HEAD
 			echo ""
 			echo ""
 			echo ""
-=======
->>>>>>> 73e65936076baade8f41bd7fa2e4ca4a4ecb3992
+
 			#WSGI File
 			echo "Creating Get5.wsgi"
 			wsgi_create
@@ -605,14 +606,17 @@ case $option in
 			echo "Creating Apache Config"
 			apacheconfig
 
-<<<<<<< HEAD
 			echo ""
 			echo ""
 			echo ""
-=======
-			#Disabling default apache2 site"
-			sudo a2dissite 000-default.conf
->>>>>>> 73e65936076baade8f41bd7fa2e4ca4a4ecb3992
+
+			#Disabling default apache2 site
+			echo "Disabled default apache2 site"
+			a2dissite 000-default.conf
+			
+			echo ""
+			echo ""
+			echo ""
 			
 			echo "Changing Directory back to /var/www/get5-web"
 			cd /var/www/get5-web
