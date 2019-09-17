@@ -71,7 +71,7 @@ fi
 		then
 			echo "Sitename Apache Config already exist in sites-enabled"
 			echo "Do you want to delete existing $sitename.conf file"
-			read -p "Enter Yes or No" sitefile
+			read -p "Enter Yes or No:" sitefile
 			while [[ "$sitefile" != @("Yes"|"No") ]]
 				do
 				echo "You did not select Yes or No."
@@ -215,6 +215,12 @@ select option in Install Update 'Create WSGI' 'Create Apache Config' exit
 do
 case $option in
 	Install)
+			#Setting locales
+			echo "LC_ALL=en_US.UTF-8" >> /etc/environment
+			echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+			echo "LANG=en_US.UTF-8" > /etc/locale.conf
+			locale-gen en_US.UTF-8
+
 		if [ -d "/var/www/get5-web" ] 
 		then
 			echo "Installation already done and exist inside /var/www/get5-web ."
@@ -307,15 +313,21 @@ case $option in
 				case $branch in
 				master)
 					echo -e "\e[34m Downloading Master branch \e[39m"
-					git clone https://github.com/PhlexPlexico/get5-web
+					git clone https://github.com/xe1os/get5-web
 					echo -e "\e[34m Finish Downloading Master Branch \e[39m"
 					break;
 				;;
 				development)
 					echo -e "\e[34m Downloading Development branch \e[39m"
-					git clone -b development --single-branch https://github.com/PhlexPlexico/get5-web 
+					git clone -b development --single-branch https://github.com/xe1os/get5-web 
 					echo -e "\e[34m Finish Downloading Development Branch \e[39m"
 					break;
+				;;
+				gamersguild)
+                                        echo -e "\e[34m Downloading GamersGuild branch \e[39m"
+                                        git clone -b gamersguild --single-branch https://github.com/xe1os/get5-web
+                                        echo -e "\e[34m Finish Downloading GamersGuild Branch \e[39m"
+                                        break;
 				;;
 				*) 
 					echo -e "\e[31m You didnt select correct Option, Please use selection from above \e[39m"
@@ -587,6 +599,7 @@ case $option in
 			echo ""
 			echo ""
 			echo ""
+
 			#WSGI File
 			echo "Creating Get5.wsgi"
 			wsgi_create
@@ -599,6 +612,14 @@ case $option in
 			echo "Creating Apache Config"
 			apacheconfig
 
+			echo ""
+			echo ""
+			echo ""
+
+			#Disabling default apache2 site
+			echo "Disabled default apache2 site"
+			a2dissite 000-default.conf
+			
 			echo ""
 			echo ""
 			echo ""
