@@ -550,7 +550,7 @@ case $option in
 			sed -i "s|STEAM_API_KEY = '???'|STEAM_API_KEY = '$steamapi'|g" $file
 			sed -i "s|SECRET_KEY = '???'|SECRET_KEY = '$secretkey'|g" $file
 			sed -i "s|WEBPANEL_NAME = 'Get5'|WEBPANEL_NAME = '$wpanelname'|g" $file
-			sed -i "s|CUSTOM_PLAYER_NAMES = True|CUSTOM_PLAYER_NAMES = True = $customname|g" $file
+			sed -i "s|CUSTOM_PLAYER_NAMES = True|CUSTOM_PLAYER_NAMES = $customname|g" $file
 			sed -i "s|DATABASE_KEY = '???'|DATABASE_KEY = '$dbkey'|g" $file
 			sed -i "s|ADMINS_ACCESS_ALL_MATCHES = False|ADMINS_ACCESS_ALL_MATCHES = $superadminaccess|g" $file
 			sed -i "s|CREATE_MATCH_TITLE_TEXT = False|CREATE_MATCH_TITLE_TEXT = $matchttext|g" $file
