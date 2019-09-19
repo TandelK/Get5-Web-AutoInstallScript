@@ -89,7 +89,7 @@ fi
 			echo "Creating Apache Site Configuration File"
 			fi 
 		
-			## Port 80 HTTP Site Configuration 
+			## HTTP Site Configuration 
 			echo "Creating Apache Site config file under /etc/apache2/sites-enabled/$sitename.conf"
 			echo "<VirtualHost *:80>" >>$sitename.conf
 			echo "	ServerName $sitename" >>$sitename.conf
@@ -309,7 +309,7 @@ case $option in
 			# Branch Selection
 			echo -e "\e[34m Github Branch Selection \e[39m"
 			PS3="Select the branch to clone >"
-			select branch in master development
+			select branch in master development gamersguild
 			do
 				case $branch in
 				master)
@@ -325,10 +325,10 @@ case $option in
 					break;
 				;;
 				gamersguild)
-                                        echo -e "\e[34m Downloading GamersGuild branch \e[39m"
-                                        git clone -b gamersguild --single-branch https://github.com/xe1os/get5-web
-                                        echo -e "\e[34m Finish Downloading GamersGuild Branch \e[39m"
-                                        break;
+                    echo -e "\e[34m Downloading GamersGuild branch \e[39m"
+                    git clone -b gamersguild --single-branch https://github.com/xe1os/get5-web
+                    echo -e "\e[34m Finish Downloading GamersGuild Branch \e[39m"
+                    break;
 				;;
 				*) 
 					echo -e "\e[31m You didnt select correct Option, Please use selection from above \e[39m"
@@ -546,7 +546,7 @@ case $option in
 			sed -i "s|STEAM_API_KEY = '???'|STEAM_API_KEY = '$steamapi'|g" $file
 			sed -i "s|SECRET_KEY = '???'|SECRET_KEY = '$secretkey'|g" $file
 			sed -i "s|WEBPANEL_NAME = 'Get5'|WEBPANEL_NAME = '$wpanelname'|g" $file
-			sed -i "s|CUSTOM_PLAYER_NAMES = True|CUSTOM_PLAYER_NAMES = True = $customname|g" $file
+			sed -i "s|CUSTOM_PLAYER_NAMES = True|CUSTOM_PLAYER_NAMES = $customname|g" $file
 			sed -i "s|DATABASE_KEY = '???'|DATABASE_KEY = '$dbkey'|g" $file
 			sed -i "s|ADMINS_ACCESS_ALL_MATCHES = False|ADMINS_ACCESS_ALL_MATCHES = $superadminaccess|g" $file
 			sed -i "s|CREATE_MATCH_TITLE_TEXT = False|CREATE_MATCH_TITLE_TEXT = $matchttext|g" $file
