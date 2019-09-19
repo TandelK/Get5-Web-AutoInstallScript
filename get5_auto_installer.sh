@@ -55,10 +55,6 @@ fi
 	function apacheconfig() 
 	{
 		cd /etc/apache2/sites-enabled/
-		echo "Please enter the http port number for Web Panel (default - 80)"
-		read port
-		echo "You have entered $port"
-		
 		echo "Please Enter Panel Address without http or https protocol"
 		read sitename
 		echo "You have entered $sitename"
@@ -95,7 +91,7 @@ fi
 		
 			## HTTP Site Configuration 
 			echo "Creating Apache Site config file under /etc/apache2/sites-enabled/$sitename.conf"
-			echo "<VirtualHost *:$port>" >>$sitename.conf
+			echo "<VirtualHost *:80>" >>$sitename.conf
 			echo "	ServerName $sitename" >>$sitename.conf
 			echo "	ServerAdmin $adminemail" >>$sitename.conf
 			echo "	WSGIScriptAlias / /var/www/get5-web/get5.wsgi" >>$sitename.conf
