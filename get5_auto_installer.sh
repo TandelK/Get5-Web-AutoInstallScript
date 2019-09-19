@@ -325,10 +325,10 @@ case $option in
 					break;
 				;;
 				gamersguild)
-                                        echo -e "\e[34m Downloading GamersGuild branch \e[39m"
-                                        git clone -b gamersguild --single-branch https://github.com/xe1os/get5-web
-                                        echo -e "\e[34m Finish Downloading GamersGuild Branch \e[39m"
-                                        break;
+                    echo -e "\e[34m Downloading GamersGuild branch \e[39m"
+                    git clone -b gamersguild --single-branch https://github.com/xe1os/get5-web
+                    echo -e "\e[34m Finish Downloading GamersGuild Branch \e[39m"
+                    break;
 				;;
 				*) 
 					echo -e "\e[31m You didnt select correct Option, Please use selection from above \e[39m"
