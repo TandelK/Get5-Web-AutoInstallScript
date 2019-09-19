@@ -309,26 +309,20 @@ case $option in
 			# Branch Selection
 			echo -e "\e[34m Github Branch Selection \e[39m"
 			PS3="Select the branch to clone >"
-			select branch in master development gamersguild
+			select branch in master development
 			do
 				case $branch in
 				master)
 					echo -e "\e[34m Downloading Master branch \e[39m"
-					git clone https://github.com/xe1os/get5-web
+					git clone https://github.com/PhlexPlexico/get5-web
 					echo -e "\e[34m Finish Downloading Master Branch \e[39m"
 					break;
 				;;
 				development)
 					echo -e "\e[34m Downloading Development branch \e[39m"
-					git clone -b development --single-branch https://github.com/xe1os/get5-web 
+					git clone -b development --single-branch https://github.com/PhlexPlexico/get5-web 
 					echo -e "\e[34m Finish Downloading Development Branch \e[39m"
 					break;
-				;;
-				gamersguild)
-                    echo -e "\e[34m Downloading GamersGuild branch \e[39m"
-                    git clone -b gamersguild --single-branch https://github.com/xe1os/get5-web
-                    echo -e "\e[34m Finish Downloading GamersGuild Branch \e[39m"
-                    break;
 				;;
 				*) 
 					echo -e "\e[31m You didnt select correct Option, Please use selection from above \e[39m"
