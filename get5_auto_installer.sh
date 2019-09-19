@@ -309,7 +309,7 @@ case $option in
 			# Branch Selection
 			echo -e "\e[34m Github Branch Selection \e[39m"
 			PS3="Select the branch to clone >"
-			select branch in master development
+			select branch in master development gamersguild
 			do
 				case $branch in
 				master)
