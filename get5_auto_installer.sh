@@ -71,7 +71,7 @@ fi
 		then
 			echo "Sitename Apache Config already exist in sites-enabled"
 			echo "Do you want to delete existing $sitename.conf file"
-			read -p "Enter Yes or No" sitefile
+			read -p "Enter Yes or No:" sitefile
 			while [[ "$sitefile" != @("Yes"|"No") ]]
 				do
 				echo "You did not select Yes or No."
@@ -89,7 +89,7 @@ fi
 			echo "Creating Apache Site Configuration File"
 			fi 
 		
-			## Port 80 HTTP Site Configuration 
+			## HTTP Site Configuration 
 			echo "Creating Apache Site config file under /etc/apache2/sites-enabled/$sitename.conf"
 			echo "<VirtualHost *:80>" >>$sitename.conf
 			echo "	ServerName $sitename" >>$sitename.conf
@@ -215,6 +215,13 @@ select option in Install Update 'Create WSGI' 'Create Apache Config' exit
 do
 case $option in
 	Install)
+			#Setting locales
+			echo "Setting system locales"
+			echo "LC_ALL=en_US.UTF-8" >> /etc/environment
+			echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+			echo "LANG=en_US.UTF-8" > /etc/locale.conf
+			locale-gen en_US.UTF-8
+
 		if [ -d "/var/www/get5-web" ] 
 		then
 			echo "Installation already done and exist inside /var/www/get5-web ."
@@ -484,6 +491,19 @@ case $option in
 			echo ""
 			echo ""
 			echo ""
+
+			#Custom Player Names
+			echo "Do you want to enable Custom Player Names in Match Use True or False (Case Sensitive)"
+			read -p "True or False :" customname 
+			while [[ $customname != @("True"|"False") ]]
+				do
+				echo "Please enter only True or False"
+				read -p "True or False :" customname
+			done
+			
+			echo ""
+			echo ""
+			echo ""
 			
 			#Admin Access all Matches
 			echo "Can Super Admin Access all the Matches ? Use True or False (Case Sensitive)"
@@ -520,46 +540,47 @@ case $option in
 			sed -i "s|STEAM_API_KEY = '???'|STEAM_API_KEY = '$steamapi'|g" $file
 			sed -i "s|SECRET_KEY = '???'|SECRET_KEY = '$secretkey'|g" $file
 			sed -i "s|WEBPANEL_NAME = 'Get5'|WEBPANEL_NAME = '$wpanelname'|g" $file
+			sed -i "s|CUSTOM_PLAYER_NAMES = True|CUSTOM_PLAYER_NAMES = $customname|g" $file
 			sed -i "s|DATABASE_KEY = '???'|DATABASE_KEY = '$dbkey'|g" $file
 			sed -i "s|ADMINS_ACCESS_ALL_MATCHES = False|ADMINS_ACCESS_ALL_MATCHES = $superadminaccess|g" $file
 			sed -i "s|CREATE_MATCH_TITLE_TEXT = False|CREATE_MATCH_TITLE_TEXT = $matchttext|g" $file
-			sed -i "66 s|SUPER_ADMIN_IDS = \[.*\]|SUPER_ADMIN_IDS = ['$superadminsteamid']|g" $file
-			echo "['$superadminsteamid']" | sed -i "66 s:,:\',\':g" $file
+			sed -i "67 s|SUPER_ADMIN_IDS = \[.*\]|SUPER_ADMIN_IDS = ['$superadminsteamid']|g" $file
+			echo "['$superadminsteamid']" | sed -i "67 s:,:\',\':g" $file
 			
 			if [ $normaladmin == "True" ]
 			then
-				sed -i "62 s|ADMIN_IDS = \[.*\]|ADMIN_IDS = ['$adminsteamid']|g" $file
-				echo "['$adminsteamid']" | sed -i "62 s:,:\',\':g" $file
+				sed -i "63 s|ADMIN_IDS = \[.*\]|ADMIN_IDS = ['$adminsteamid']|g" $file
+				echo "['$adminsteamid']" | sed -i "63 s:,:\',\':g" $file
 			fi
 			
 			if [ $adminonlypanel == "True" ]
 			then
 				if [ $normaladmin == "True" ]
 				then
-					sed -i "58 s|WHITELISTED_IDS = \[.*\]|WHITELISTED_IDS = ['$superadminsteamid,$adminsteamid']|g" $file
-					echo "['$superadminsteamid','$adminsteamid']" | sed -i "58 s:,:\',\':g" $file
+					sed -i "59 s|WHITELISTED_IDS = \[.*\]|WHITELISTED_IDS = ['$superadminsteamid,$adminsteamid']|g" $file
+					echo "['$superadminsteamid','$adminsteamid']" | sed -i "59 s:,:\',\':g" $file
 				else
-					sed -i "58 s|WHITELISTED_IDS = \[.*\]|WHITELISTED_IDS = ['$superadminsteamid']|g" $file
-					echo "['$superadminsteamid']" | sed -i "58 s:,:\',\':g" $file
+					sed -i "59 s|WHITELISTED_IDS = \[.*\]|WHITELISTED_IDS = ['$superadminsteamid']|g" $file
+					echo "['$superadminsteamid']" | sed -i "59 s:,:\',\':g" $file
 				fi
 			else
 				if [ $whitelistoption == "True" ] 
 				then
 					if [ $normaladmin == "True" ]
 					then
-						sed -i "58 s|WHITELISTED_IDS = \[.*\]|WHITELISTED_IDS = ['$superadminsteamid,$adminsteamid,$whitelistids']|g" $file
-						echo "['$superadminsteamid','$adminsteamid','$whitelistids']" | sed -i "58 s:,:\',\':g" $file
+						sed -i "59 s|WHITELISTED_IDS = \[.*\]|WHITELISTED_IDS = ['$superadminsteamid,$adminsteamid,$whitelistids']|g" $file
+						echo "['$superadminsteamid','$adminsteamid','$whitelistids']" | sed -i "59 s:,:\',\':g" $file
 					else
-						sed -i "58 s|WHITELISTED_IDS = \[.*\]|WHITELISTED_IDS = ['$superadminsteamid,$whitelistids']|g" $file
-						echo "['$superadminsteamid','$whitelistids']" | sed -i "58 s:,:\',\':g" $file
+						sed -i "59 s|WHITELISTED_IDS = \[.*\]|WHITELISTED_IDS = ['$superadminsteamid,$whitelistids']|g" $file
+						echo "['$superadminsteamid','$whitelistids']" | sed -i "59 s:,:\',\':g" $file
 					fi
 				fi
 			fi
 			
 			if [ $spectatoroption == "True" ]
 			then
-				sed -i "54 s|SPECTATOR_IDS = \[.*\]|SPECTATOR_IDS = ['$spectatorids']|g" $file
-				echo "['$spectatorids']" | sed -i "62 s:,:\',\':g" $file
+				sed -i "55 s|SPECTATOR_IDS = \[.*\]|SPECTATOR_IDS = ['$spectatorids']|g" $file
+				echo "['$spectatorids']" | sed -i "55 s:,:\',\':g" $file
 			fi
 			
 			echo ""
@@ -587,6 +608,7 @@ case $option in
 			echo ""
 			echo ""
 			echo ""
+
 			#WSGI File
 			echo "Creating Get5.wsgi"
 			wsgi_create
