@@ -624,14 +624,6 @@ case $option in
 			echo ""
 			echo ""
 			echo ""
-
-			#Disabling default apache2 site
-			echo "Disabled default apache2 site"
-			a2dissite 000-default.conf
-			
-			echo ""
-			echo ""
-			echo ""
 			
 			echo "Changing Directory back to /var/www/get5-web"
 			cd /var/www/get5-web
