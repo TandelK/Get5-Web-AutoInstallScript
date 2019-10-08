@@ -4,7 +4,7 @@
 # Credits : Splewis , PhlexPlexico 
 # Purpose: Get5 Web API Panel installation script
 # Website : 
-version="0.95"
+version="0.99"
 
 # Checking for Root
 if [[ $EUID -ne 0 ]]; then
@@ -58,7 +58,7 @@ fi
 		echo "Please Enter Panel Address without http or https protocol"
 		read sitename
 		echo "You have entered $sitename"
-		while [[ $sitename == *"http"* || $sitename == *"https"* ]];
+		while [[ $sitename == http* || $sitename == https* ]];
 		do
 			echo "Please re-enter Website Address without http or https"
 			read -r sitename
