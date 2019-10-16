@@ -258,7 +258,7 @@ case $option in
 		then
 			redMessage "Installation already done and exist inside /var/www/get5-web ."
 		else
-			greenMessage -e "\e[32m Downloading Dependencies \e[39m"
+			greenMessage "Downloading Dependencies"
 				
 			cyanMessage "Do you want to use Apt update and Upgrade Commands ?" 
 			redMessage "If you are using specific branch / versions for other projects on the panel i would not recommend below option"
@@ -285,7 +285,7 @@ case $option in
 
 			gitavailable='git'
 			if ! dpkg -s $gitavailable >/dev/null 2>&1; then
-				echo -e"\e[32m Installing Git"
+				greenMessage "Installing Git"
 				sudo apt-get install $gitavailable 
 				else cyanMessage "Git Already Installed"
 			fi
