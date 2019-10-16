@@ -6,12 +6,6 @@
 # Website : 
 version="0.99"
 
-# Checking for Root
-if [[ $EUID -ne 0 ]]; then
-   echo -e "\e[32m This script must be run as root as it require packages to be downloaded \e[39m" 
-   exit 1
-fi
-
 ## Color Support Functions
 greenMessage() {
 	echo -e "\\033[32;1m${@}\033[0m"
@@ -41,6 +35,11 @@ yellowOneLineMessage() {
 	echo -en "\\033[33;1m${@}\033[0m"
 }
 
+# Checking for Root
+if [[ $EUID -ne 0 ]]; then
+   redMessage "This script must be run as root as it require packages to be downloaded" 
+   exit 1
+fi
 
 
 ##Get5 WSGI Create Function
