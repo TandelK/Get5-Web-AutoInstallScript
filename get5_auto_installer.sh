@@ -242,7 +242,7 @@ greenMessage "Welcome to Get5 Web Panel Auto Installation script"
 echo ""
 PS3="Select the option >"
 
-select option in Install Update 'Create WSGI' 'Create Apache Config' 'Create FTP' exit
+select option in Install Update 'Create WSGI' 'Create Apache Config' 'Create FTP' 'Remove Get5' exit
 do
 case $option in
 	Install)
@@ -308,7 +308,7 @@ case $option in
 			service mysql restart
 			
 			#MYSQL Information
-			cyanMessage "MySQL Server Database Creation"
+			cyanMessage "MySQL Server User and Database Creation"
 			
 			get5dbpass="$(openssl rand -base64 12)"
 			redMessage "Just for safety if you want to save it Get5 User Password is $get5dbpass"
@@ -322,7 +322,7 @@ case $option in
 			mysql -u root -p$rootpasswd -e "CREATE DATABASE get5 CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
 			
 			yellowMessage "Creating Get5 User with Random Password"
-			mysql -u root -p$rootpasswd -e "CREATE USER get5@localhost IDENTIFIED BY '$get5dbpass';"
+			mysql -u root -p$rootpasswd -e "CREATE USER 'get5'@'localhost' IDENTIFIED BY '$get5dbpass';"
 			
 			yellowMessage "Grant Privileges to Get5 User to Get5 Database"
 			mysql -u root -p$rootpasswd -e "GRANT ALL PRIVILEGES ON get5.* TO 'get5'@'localhost' WITH GRANT OPTION;"
@@ -851,6 +851,44 @@ case $option in
 		else
 		redMessage "You dont seem to have Get5-Web Installed"
 		fi
+	;;
+	'Remove Get5')
+		if [ ! -d "/var/www/get5-web" ]
+		then
+			redMessage "Get5-Web Installation not exist in /var/www/get5-web"
+			break;
+		else
+			redMessage "Do you really want to remove Get5-Web Installation"
+			read -p "True or False" get5remove
+			while [[ $get5remove != @("True"|"False") ]]
+				do
+				redMessage "Please enter only True or False"
+				read -p "True or False :" get5remove
+			done
+			if [ $get5remove == "True" ]
+			then
+				redMessage "Removing Get5-Web Directory"
+				rm -r /var/www/get5-web/
+				redMessage "Removing MySQL Database and User"
+				
+				yellowMessage "Enter MySQL Root Password"
+				read -p "YOUR SQL ROOT PASSWORD: " -s rootpasswd
+				until mysql -u root -p$rootpasswd  -e ";" ; do
+					read -p "Can't connect, please retry Root Password: " -s rootpasswd
+				done
+				
+				redMessage "Removing MySQL Database"
+				mysql -u root -p$rootpasswd -e "DROP DATABASE get5;"
+				
+				redMessage "Removing MySQL User"
+				mysql -u root -p$rootpasswd -e "DROP USER get5@localhost;"
+				
+				redMessage "Flushing MySQL Privileges"
+				mysql -u root -p$rootpasswd -e "FLUSH PRIVILEGES;"
+			else
+				redMessage "You selected False , Nothing will be deleted"
+				exit 1;
+			fi
 	;;
 	exit)
 		redMessage "Exiting Script"
