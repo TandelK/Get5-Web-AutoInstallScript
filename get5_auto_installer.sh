@@ -734,7 +734,7 @@ case $option in
 				read -s -p "Enter password : " password
 				egrep "^$username" /etc/passwd >/dev/null
 				if [ $? -eq 0 ]; then
-					redMessage "$username exists!"
+					redMessage "$username already exists!"
 					exit 1
 				else
 					pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
@@ -742,7 +742,6 @@ case $option in
 					useradd -m -p $pass -s /bin/bash $username
 					[ $? -eq 0 ] && echo "User has been added to system!" || echo "Failed to add a user!"
 				fi
-				greenMessage "Your Username is $username and Password for FTP is $pass" 
 	
 			else
 				echo "Only root may add a user to the system"
@@ -766,9 +765,40 @@ case $option in
 				fi
 			fi
 			
-			echo "Using External IP as the Passive IP Address"
-			ip="$(dig TXT +short o-o.myaddr.l.google.com @ns1.google.com)"
 			
+			
+			redMessage "What kind of FTP IP you want to use ?"
+			cyanMessage "Localhost - When same PCs are used for CSGO and get5-Web"
+			cyanMessage "Internal IP - When Get5-Web is hosted on same Network of CSGO Server in LAN Environment"
+			cyanMessage "Recommended - When Get5-Web wants to connect from External IP to different CSGO Host - This option is also recommend for Amazon AWS and other Cloud Services"
+			cyanMessage "External IP needs working Internet Connection"
+			
+			yellowMessage "What kind of IP you want to use ?"
+			PS3="Select the IP for FTP Connection>"
+			select iptype in 'Localhost' 'Internal IP' 'External IP'
+			do 
+				case $iptype in
+				'Localhost')
+					yellowMessage "You have selected Localhost for the FTP IP"
+					ip=$"127.0.0.1"
+					break;
+				;;
+				'Internal IP')
+					yellowMessage "You have selected Internal IP (Recommend for LAN Servers"
+					ip="$(ifconfig | grep -A 1 'eth0' | tail -1 | cut -d ':' -f 2 | cut -d ' ' -f 1)"
+					break;
+				;;
+				'External IP')
+					greenMessage "Using External IP as the Passive IP Address"
+					ip="$(dig TXT +short o-o.myaddr.l.google.com @ns1.google.com)"
+					break;
+				;;
+				*)
+				redMessage "You did not select Correct Option, Please do it again"
+				;;
+				esac
+			done
+				
 			vsftpd="/etc/vsftpd.conf"
 			echo "allow_writeable_chroot=YES" >> $vsftpd
 			echo "anon_umask=022" >> $vsftpd
@@ -789,7 +819,10 @@ case $option in
 			echo "pam_service_name=vsftpd" >> $vsftpd
 			echo "pasv_enable=YES" >> $vsftpd
 			echo "pasv_address=$ip" >> $vsftpd
+			if [[ $iptype == "External IP" ]]
+			then
 			echo "${ip}" | sed -i 's/"//g' $vsftpd
+			fi
 			echo "pasv_max_port=12100" >> $vsftpd
 			echo "pasv_min_port=12000" >> $vsftpd
 			echo "seccomp_sandbox=NO" >> $vsftpd
