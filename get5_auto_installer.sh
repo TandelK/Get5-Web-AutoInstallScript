@@ -889,6 +889,7 @@ case $option in
 				redMessage "You selected False , Nothing will be deleted"
 				exit 1;
 			fi
+		fi
 	;;
 	exit)
 		redMessage "Exiting Script"
