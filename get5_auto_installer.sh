@@ -575,43 +575,43 @@ case $option in
 			sed -i "s|DATABASE_KEY = '???'|DATABASE_KEY = '$dbkey'|g" $file
 			sed -i "s|ADMINS_ACCESS_ALL_MATCHES = False|ADMINS_ACCESS_ALL_MATCHES = $superadminaccess|g" $file
 			sed -i "s|CREATE_MATCH_TITLE_TEXT = False|CREATE_MATCH_TITLE_TEXT = $matchttext|g" $file
-			sed -i "67 s|SUPER_ADMIN_IDS = \[.*\]|SUPER_ADMIN_IDS = ['$superadminsteamid']|g" $file
-			echo "['$superadminsteamid']" | sed -i "67 s:,:\',\':g" $file
+			sed -i "71 s|SUPER_ADMIN_IDS = \[.*\]|SUPER_ADMIN_IDS = ['$superadminsteamid']|g" $file
+			echo "['$superadminsteamid']" | sed -i "71 s:,:\',\':g" $file
 			
 			if [ $normaladmin == "True" ]
 			then
-				sed -i "63 s|ADMIN_IDS = \[.*\]|ADMIN_IDS = ['$adminsteamid']|g" $file
-				echo "['$adminsteamid']" | sed -i "63 s:,:\',\':g" $file
+				sed -i "66 s|ADMIN_IDS = \[.*\]|ADMIN_IDS = ['$adminsteamid']|g" $file
+				echo "['$adminsteamid']" | sed -i "66 s:,:\',\':g" $file
 			fi
 			
 			if [ $adminonlypanel == "True" ]
 			then
 				if [ $normaladmin == "True" ]
 				then
-					sed -i "59 s|WHITELISTED_IDS = \[.*\]|WHITELISTED_IDS = ['$superadminsteamid,$adminsteamid']|g" $file
-					echo "['$superadminsteamid','$adminsteamid']" | sed -i "59 s:,:\',\':g" $file
+					sed -i "61 s|WHITELISTED_IDS = \[.*\]|WHITELISTED_IDS = ['$superadminsteamid,$adminsteamid']|g" $file
+					echo "['$superadminsteamid','$adminsteamid']" | sed -i "61 s:,:\',\':g" $file
 				else
-					sed -i "59 s|WHITELISTED_IDS = \[.*\]|WHITELISTED_IDS = ['$superadminsteamid']|g" $file
-					echo "['$superadminsteamid']" | sed -i "59 s:,:\',\':g" $file
+					sed -i "61 s|WHITELISTED_IDS = \[.*\]|WHITELISTED_IDS = ['$superadminsteamid']|g" $file
+					echo "['$superadminsteamid']" | sed -i "61 s:,:\',\':g" $file
 				fi
 			else
 				if [ $whitelistoption == "True" ] 
 				then
 					if [ $normaladmin == "True" ]
 					then
-						sed -i "59 s|WHITELISTED_IDS = \[.*\]|WHITELISTED_IDS = ['$superadminsteamid,$adminsteamid,$whitelistids']|g" $file
-						echo "['$superadminsteamid','$adminsteamid','$whitelistids']" | sed -i "59 s:,:\',\':g" $file
+						sed -i "61 s|WHITELISTED_IDS = \[.*\]|WHITELISTED_IDS = ['$superadminsteamid,$adminsteamid,$whitelistids']|g" $file
+						echo "['$superadminsteamid','$adminsteamid','$whitelistids']" | sed -i "61 s:,:\',\':g" $file
 					else
-						sed -i "59 s|WHITELISTED_IDS = \[.*\]|WHITELISTED_IDS = ['$superadminsteamid,$whitelistids']|g" $file
-						echo "['$superadminsteamid','$whitelistids']" | sed -i "59 s:,:\',\':g" $file
+						sed -i "61 s|WHITELISTED_IDS = \[.*\]|WHITELISTED_IDS = ['$superadminsteamid,$whitelistids']|g" $file
+						echo "['$superadminsteamid','$whitelistids']" | sed -i "61 s:,:\',\':g" $file
 					fi
 				fi
 			fi
 			
 			if [ $spectatoroption == "True" ]
 			then
-				sed -i "55 s|SPECTATOR_IDS = \[.*\]|SPECTATOR_IDS = ['$spectatorids']|g" $file
-				echo "['$spectatorids']" | sed -i "55 s:,:\',\':g" $file
+				sed -i "56 s|SPECTATOR_IDS = \[.*\]|SPECTATOR_IDS = ['$spectatorids']|g" $file
+				echo "['$spectatorids']" | sed -i "56 s:,:\',\':g" $file
 			fi
 			
 			echo ""
