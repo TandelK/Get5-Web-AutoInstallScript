@@ -8,6 +8,12 @@ For Installing just simply copy the below code and paste it in Terminal of Ubunt
 
 `./get5_auto_installer.sh`
 
+For Development Testing Branch use the below code
+
+`wget https://raw.githubusercontent.com/TandelK/Get5-AutoInstallScript/development-testing/get5_auto_installer.sh && chmod +x get5_auto_installer.sh`
+
+`./get5_auto_installer.sh`
+
 The reason why wget Bash script does not work is due to selection base in start
 
 ## This Auto Install Script Includes 
