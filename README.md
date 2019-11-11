@@ -29,7 +29,11 @@ The below 2 options are generally not required as they are auto created with Ins
 4) Apache Configuration : If you have Get5-Web Installed and forgot to do Apache2 Config this will help you creating the same. 
 The SSL Module will require Certificate File in .crt format as well as Private Key in .key format already existing in the server. Please remember the paths of the SSL Certificate as well as Private Key paths as they are required during HTTPS Version installation. 
 
-5) Exit - Meh !! Just Quit the Script . Why did i even make it function 
+5) Create FTP - This function is for setting up FTP Server for Demo Upload function. Configure FTP settings via Game Server Plugin of Phlex get5_apistats plugin that supports Demo Upload Function. 
+
+6) Remove Get5-Web - Have existing Get5-Web installed and want to remove them quickly , use this function it will remove most of the required files that are used by Get5-Web
+
+7) Exit - Meh !! Just Quit the Script . Why did i even make it function 
 
 Notes : 
 Sometime after update of development branch i would recommend you to manually check prod_config file if there are any updates.
