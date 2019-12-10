@@ -18,22 +18,20 @@ The reason why wget Bash script does not work is due to selection base in start
 
 ## This Auto Install Script Includes
 
-01)Install : Selection of Master Branch which is stable as well as Development branch is available
+1. Install : Selection of Master Branch which is stable as well as Development branch is available
 
-02)Update : Auto Update the Panel and it will automatically run the Upgrade Commands like Requirements or Migrations upgrade after Updates.
+2. Update : Auto Update the Panel and it will automatically run the Upgrade Commands like Requirements or Migrations upgrade after Updates.
 
-The below 2 options are generally not required as they are auto created with Install Function
+3. Create WSGI : You can manually create WSGI Script if you are having issues.
 
-03)Create WSGI : You can manually create WSGI Script if you are having issues.
-
-04)Apache Configuration : If you have Get5-Web Installed and forgot to do Apache2 Config this will help you creating the same.
+4. Apache Configuration : If you have Get5-Web Installed and forgot to do Apache2 Config this will help you creating the same.
 The SSL Module will require Certificate File in .crt format as well as Private Key in .key format already existing in the server. Please remember the paths of the SSL Certificate as well as Private Key paths as they are required during HTTPS Version installation.
 
-05)Create FTP - This function is for setting up FTP Server for Demo Upload function. Configure FTP settings via Game Server Plugin of Phlex get5_apistats plugin that supports Demo Upload Function.
+5. Create FTP - This function is for setting up FTP Server for Demo Upload function. Configure FTP settings via Game Server Plugin of Phlex get5_apistats plugin that supports Demo Upload Function.
 
-06)Remove Get5-Web - Have existing Get5-Web installed and want to remove them quickly , use this function it will remove most of the required files that are used by Get5-Web
+6. Remove Get5-Web - Have existing Get5-Web installed and want to remove them quickly , use this function it will remove most of the required files that are used by Get5-Web
 
-07)Exit - Meh !! Just Quit the Script . Why did i even make it function
+7. Exit - Meh !! Just Quit the Script . Why did i even make it function
 
 Notes :
 Sometime after update of development branch i would recommend you to manually check prod_config file if there are any updates.
