@@ -1,4 +1,4 @@
-# Get5-AutoInstallScript
+# Get5-Web-AutoInstallScript
 
 Are you having hard time installing Get5-Web Panel ? Well here is a quick Auto Install Script created by me for installing <https://github.com/PhlexPlexico/get5-web> version. The reason why i selected Phlex version is due to advance updates and more options added by him.
 
