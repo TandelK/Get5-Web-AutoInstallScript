@@ -85,12 +85,12 @@ fi
 	function apacheconfig() 
 	{
 		cd /etc/apache2/sites-enabled/
-		cyanMessage "Please Enter Panel Address without http or https protocol"
+		cyanMessage "Please Enter Panel Address without http or https protocol [eg. g5panel.website.com]"
 		read sitename
 		greenMessage "You have entered $sitename"
 		while [[ $sitename == http* || $sitename == https* ]];
 		do
-			redMessage "Please re-enter Website Address without http or https"
+			redMessage "Please re-enter Website Address without http or https protocol [eg. g5panel.website.com]"
 			read -r sitename
 			greenMessage "You have entered $sitename"
 		done
@@ -410,6 +410,7 @@ case $option in
 			redMessage "Warning !! Only added Trusted Steam Admins ID as they have access to everything on the Panel \e[39m"
 			echo ""
 			greenMessage "Super Admin's Steam ID 64 (Please ensure values are separated by a comma. eg.id1,id2)"
+			redMessage "Make sure the Steam ID dont end with [,] in the end"
 			read -p "Steam ID 64 of Super Admins :" superadminsteamid
 			while [[ $superadminsteamid == "" ]];
 				do
