@@ -4,13 +4,13 @@ Are you having hard time installing Get5-Web Panel ? Well here is a quick Auto I
 
 For Installing just simply copy the below code and paste it in Terminal of Ubuntu System. Currently i have only support for Ubuntu System most trusted 16.04 LTS Version. For any other Distro you are free to modify the Script as per requirement and can also send Pull Request to this Repo.
 
-`wget https://raw.githubusercontent.com/TandelK/Get5-AutoInstallScript/master/get5_auto_installer.sh && chmod +x get5_auto_installer.sh`
+`wget https://raw.githubusercontent.com/xe1os/Get5-AutoInstallScript/master/get5_auto_installer.sh && chmod +x get5_auto_installer.sh`
 
 `./get5_auto_installer.sh`
 
 For Development Testing Branch use the below code
 
-`wget https://raw.githubusercontent.com/TandelK/Get5-AutoInstallScript/development-testing/get5_auto_installer.sh && chmod +x get5_auto_installer.sh`
+`wget https://raw.githubusercontent.com/xe1os/Get5-AutoInstallScript/development-testing/get5_auto_installer.sh && chmod +x get5_auto_installer.sh`
 
 `./get5_auto_installer.sh`
 
