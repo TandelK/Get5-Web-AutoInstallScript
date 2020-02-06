@@ -233,6 +233,8 @@ fi
 			else
 				yellowMessage "SSL Support not activated"
 			fi
+			greenMessage "Enabling Website"
+			a2ensite $sitename
 			greenMessage "Restarting Apache2 Service"
 			service apache2 restart
 	}
