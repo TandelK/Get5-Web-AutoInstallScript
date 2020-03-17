@@ -345,7 +345,7 @@ case $option in
 				case $branch in
 				master)
 					yellowMessage "Downloading Master branch"
-					git clone https://github.com/PhlexPlexico/get5-web
+					git clone https://github.com/xxTeDYxx/get5-web
 					cyanMessage "Finish Downloading Master Branch"
 					break;
 				;;
