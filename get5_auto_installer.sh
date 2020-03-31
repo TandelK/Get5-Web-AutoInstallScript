@@ -367,6 +367,11 @@ case $option in
 
 			virtualenv venv
 			source venv/bin/activate
+
+			#Change Setup Tools to lower version for Supporting enum
+			pip install --upgrade 'setuptools==44.1.0'
+		
+			#Install Requirements
 			pip install -r requirements.txt
 			
 
