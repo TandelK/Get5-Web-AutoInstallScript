@@ -4,7 +4,7 @@
 # Credits : Splewis , PhlexPlexico , xe1os
 # Purpose: Get5 Web API Panel installation script
 # Website : 
-version="0.99"
+version="1.00"
 
 ## Color Support Functions
 greenMessage() {
