@@ -147,6 +147,10 @@ fi
 			echo "	<Directory /var/www/get5-web/get5/static>" >>$sitename.conf
 			echo "		Order allow,deny" >>$sitename.conf
 			echo "		Allow from all" >>$sitename.conf
+			if [ $demorewriteoverride == "True" ]
+				then
+				echo " 		AllowOverride All">>$sitename.conf
+			fi 
 			echo "	</Directory>" >>$sitename.conf
 			echo "" >>$sitename.conf
 			echo "	ErrorLog \${APACHE_LOG_DIR}/error.log" >>$sitename.conf
@@ -231,6 +235,10 @@ fi
 				echo "	<Directory /var/www/get5-web/get5/static>" >>$sitename-ssl.conf
 				echo "		Order allow,deny" >>$sitename-ssl.conf
 				echo "		Allow from all" >>$sitename-ssl.conf
+				if [ $demorewriteoverride == "True" ]
+					then
+					echo " 		AllowOverride All">>$sitename-ssl.conf
+				fi 
 				echo "	</Directory>" >>$sitename-ssl.conf
 				echo "" >>$sitename-ssl.conf
 				echo "	ErrorLog \${APACHE_LOG_DIR}/error.log" >>$sitename-ssl.conf
