@@ -279,6 +279,7 @@ fi
 			a2enmod rewrite
 			service apache2 restart
 			break;
+		fi
 	}
 
 ##Web Installation
