@@ -96,6 +96,14 @@ fi
 		done
 		cyanMessage "Enter Admin Email address: "; 
 		read adminemail
+
+		cyanMessage "Do you want to enable Demo Rewrite allowing Demos upload to different website/ftp for clients to download ?"
+		read -p "True or False(Case Sensitive)" demorewriteoverride
+		while [[ "$demorewriteoverride" != @("True"|"False") ]]
+		do
+			redMessage "You did not enter True or False. Please write it again"
+			read -p "True or False (Case Sensitive)" demorewriteoverride
+		done
 			
 		if [ -f "/etc/apache2/sites-enabled/$sitename.conf" ]
 		then
@@ -129,6 +137,10 @@ fi
 			echo "	<Directory /var/www/get5>" >>$sitename.conf
 			echo "		Order deny,allow" >>$sitename.conf
 			echo "		Allow from all" >>$sitename.conf
+			if [ $demorewriteoverride == "True" ]
+				then
+				echo " 		AllowOverride All">>$sitename.conf
+			fi 
 			echo "	</Directory>" >>$sitename.conf
 			echo "">>$sitename.conf
 			echo "	Alias /static /var/www/get5-web/get5/static" >>$sitename.conf
@@ -143,6 +155,9 @@ fi
 			echo "</VirtualHost>" >>$sitename.conf
 
 			##SSL Support
+			redMessage "Note: Before using SSL function make sure SSL Certificate and private Key are already inside the server"
+			echo ""
+			echo ""
 			cyanMessage "Do you want to use SSL (True or False)"
 			read -p "True or False:" ssloption
 			while [[ "$ssloption" != @("True"|"False") ]]
@@ -206,6 +221,10 @@ fi
 				echo "	<Directory /var/www/get5>" >>$sitename-ssl.conf
 				echo "		Order deny,allow" >>$sitename-ssl.conf
 				echo "		Allow from all" >>$sitename-ssl.conf
+				if [ $demorewriteoverride == "True" ]
+					then
+					echo " 		AllowOverride All">>$sitename-ssl.conf
+				fi 
 				echo "	</Directory>" >>$sitename-ssl.conf
 				echo "">>$sitename-ssl.conf
 				echo "	Alias /static /var/www/get5-web/get5/static" >>$sitename-ssl.conf
@@ -235,6 +254,23 @@ fi
 			fi
 			greenMessage "Restarting Apache2 Service"
 			service apache2 restart
+		
+		if [ $demorewriteoverride == "True" ]
+		then 
+			cd /var/www/get5-web/
+			cyanMessage "Enter your new Demo URL give full path till demos folder"
+			cyanMessage "eg. https://example.com/demos/ or https://demos.example.com/"
+			redMessage "Make sure it ends with / in the end"
+			read demourlpath
+			greenMessage "Creating .htaccess file for Rewrite Rules in /var/www/get5-web/"
+			echo "Options +FollowSymLinks">>.htaccess
+			echo "RewriteEngine On">>.htaccess
+			echo "RedirectMatch ^/static/demos/(.*)$ $demourlpath/$1">>.htaccess
+
+			greenMessage "Enabling Apache2 Rewrite Module"
+			a2enmod rewrite
+			service apache2 restart
+			break;
 	}
 
 ##Web Installation
@@ -242,7 +278,7 @@ greenMessage "Welcome to Get5 Web Panel Auto Installation script"
 echo ""
 PS3="Select the option >"
 
-select option in Install Update 'Create WSGI' 'Create Apache Config' 'Create FTP' 'Remove Get5' exit
+select option in Install Update 'Create WSGI' 'Create Apache Config' 'Create FTP' 'Demo Rewrite' 'Remove Get5' exit
 do
 case $option in
 	Install)
@@ -680,7 +716,6 @@ case $option in
 			greenMessage "Database User of get5@localhost is $get5dbpass"
 			greenMessage "Database Encryption Password is $dbkey"
 			greenMessage "File for modifying for Map Pools is located in /var/www/get5-web/instance/prod_config.py"
-			
 			break;
 		fi
 	;;
@@ -775,12 +810,14 @@ case $option in
 			
 			redMessage "What kind of FTP IP you want to use ?"
 			cyanMessage "Localhost - When same PCs are used for CSGO and get5-Web"
+			echo ""
 			cyanMessage "Internal IP - When Get5-Web is hosted on same Network of CSGO Server in LAN Environment"
+			echo ""
 			cyanMessage "Recommended - When Get5-Web wants to connect from External IP to different CSGO Host - This option is also recommend for Amazon AWS and other Cloud Services"
 			cyanMessage "External IP needs working Internet Connection"
 			
 			yellowMessage "What kind of IP you want to use ?"
-			PS3="Select the IP for FTP Connection>"
+			echo "Select the IP for FTP Connection>"
 			select iptype in 'Localhost' 'Internal IP' 'External IP'
 			do 
 				case $iptype in
