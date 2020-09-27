@@ -287,7 +287,7 @@ greenMessage "Welcome to Get5 Web Panel Auto Installation script"
 echo ""
 PS3="Select the option >"
 
-select option in Install Update 'Create WSGI' 'Create Apache Config' 'Create FTP' 'Demo Rewrite' 'Remove Get5' exit
+select option in Install Update 'Create WSGI' 'Create Apache Config' 'Create FTP' 'Remove Get5' exit
 do
 case $option in
 	Install)
