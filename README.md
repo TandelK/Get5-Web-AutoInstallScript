@@ -1,5 +1,8 @@
 # Get5-Web-AutoInstallScript
 
+This Panel is now E.O.L after the Developer PhlexPlexico has stopped working on the project due to Pyhton 2.7 EOL also. 
+For small issues you can ask in Issues. 
+
 Are you having hard time installing Get5-Web Panel ? Well here is a quick Auto Install Script created by me for installing <https://github.com/PhlexPlexico/get5-web> version. The reason why i selected Phlex version is due to advance updates and more options added by him.
 
 For Installing just simply copy the below code and paste it in Terminal of Ubuntu System. Currently i have only support for Ubuntu System most trusted 16.04 LTS Version. For any other Distro you are free to modify the Script as per requirement and can also send Pull Request to this Repo.
